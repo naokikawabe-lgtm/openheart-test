@@ -3,12 +3,14 @@
 
 接続先:
   1. NewsAPI: 日本語ニュース検索（無料プランあり）
-  2. Twitter/X API: SNSセンチメント（有料、高額化）
-  3. 株探/Kabutan: スクレイピング（利用規約要確認）
-  4. 適時開示 (TDnet): 上場企業の開示情報
+  2. 適時開示 (TDnet): 上場企業の開示情報
 
 推奨構成:
   - NewsAPI (ニュース) + Claude API (センチメント分析) の組み合わせ
+
+注意:
+  - 株探(Kabutan)のスクレイピングは2025年1月より公式に禁止されています
+  - Twitter/X APIは個人利用には高額なため非推奨
 """
 
 from __future__ import annotations

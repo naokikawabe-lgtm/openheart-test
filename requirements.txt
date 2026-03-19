@@ -3,7 +3,7 @@ aiohttp>=3.9.0
 
 # === 株価データ（いずれか1つ以上） ===
 yfinance>=0.2.30        # 無料。Yahoo Finance経由。すぐ使える
-# jquantsapi>=1.3.0     # JPX公式API。リアルタイムはPremiumプラン要
+# jquantsapi>=2.0.0     # JPX公式API V2（2025年12月以降のアカウントはV2必須）
 
 # === ファンダメンタルデータ ===
 # EDINET APIは追加パッケージ不要（REST API直接呼び出し）
