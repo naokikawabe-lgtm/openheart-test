@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI時代の資料作成革命 — OpenHeart Format</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@700;800;900&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       OpenHeart Presentation Theme (Inline)
+       ============================================================ */
+    :root {
+      --oh-primary: #E63946;
+      --oh-primary-light: #FF6B6B;
+      --oh-secondary: #1D3557;
+      --oh-accent: #457B9D;
+      --oh-light: #F1FAEE;
+      --oh-white: #FFFFFF;
+      --oh-dark: #0D1B2A;
+      --oh-gray: #6C757D;
+      --oh-gray-light: #E9ECEF;
+      --oh-gradient: linear-gradient(135deg, #E63946 0%, #FF6B6B 50%, #457B9D 100%);
+      --oh-gradient-dark: linear-gradient(135deg, #0D1B2A 0%, #1D3557 100%);
+      --oh-gradient-subtle: linear-gradient(135deg, #F1FAEE 0%, #FFFFFF 100%);
+      --font-ja: 'Noto Sans JP', sans-serif;
+      --font-en: 'Inter', sans-serif;
+      --font-display: 'Montserrat', var(--font-en);
+      --fs-hero: clamp(2.5rem, 7vw, 5rem);
+      --fs-title: clamp(1.8rem, 5vw, 4rem);
+      --fs-subtitle: clamp(1rem, 2.5vw, 1.75rem);
+      --fs-body: clamp(0.8rem, 1.5vw, 1.125rem);
+      --fs-caption: clamp(0.65rem, 1vw, 0.875rem);
+      --fs-small: clamp(0.55rem, 0.8vw, 0.75rem);
+      --space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+      --space-sm: clamp(0.5rem, 1vw, 1rem);
+      --space-md: clamp(1rem, 2vw, 1.5rem);
+      --space-lg: clamp(1.5rem, 3vw, 2.5rem);
+      --space-xl: clamp(2rem, 5vw, 4rem);
+      --duration-fast: 0.2s;
+      --duration-normal: 0.4s;
+      --duration-slow: 0.8s;
+      --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.16);
+      --shadow-glow: 0 0 30px rgba(230, 57, 70, 0.3);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 50%;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body { font-family: var(--font-ja); line-height: 1.7; color: var(--oh-dark); background: var(--oh-white); overflow-x: hidden; }
+
+    .slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; padding: var(--space-lg); }
+    .slide-content { width: 100%; max-width: min(90vw, 1100px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-md); text-align: center; }
+    .slide-content.left-align { text-align: left; align-items: flex-start; }
+
+    .slide.title-slide { background: var(--oh-gradient-dark); color: var(--oh-white); }
+    .slide.title-slide .main-title { font-family: var(--font-display); font-size: var(--fs-hero); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; background: var(--oh-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .slide.title-slide .subtitle { font-size: var(--fs-subtitle); color: rgba(255, 255, 255, 0.7); font-weight: 400; margin-top: var(--space-sm); }
+    .slide.title-slide .author { font-size: var(--fs-caption); color: rgba(255, 255, 255, 0.5); margin-top: var(--space-md); }
+
+    .slide.section-slide { background: var(--oh-secondary); color: var(--oh-white); }
+    .slide.section-slide .section-number { font-family: var(--font-display); font-size: var(--fs-hero); font-weight: 800; color: var(--oh-primary); line-height: 1; }
+    .slide.section-slide .section-title { font-size: var(--fs-title); font-weight: 700; }
+
+    .slide.content-slide { background: var(--oh-white); color: var(--oh-dark); }
+    .slide.content-slide-dark { background: var(--oh-dark); color: var(--oh-white); }
+
+    .slide-heading { font-size: var(--fs-title); font-weight: 700; color: var(--oh-secondary); line-height: 1.3; }
+    .slide.content-slide-dark .slide-heading { color: var(--oh-white); }
+    .slide-heading .accent { color: var(--oh-primary); }
+    .slide-subheading { font-size: var(--fs-subtitle); color: var(--oh-gray); font-weight: 400; }
+
+    .body-text { font-size: var(--fs-body); line-height: 1.8; max-width: 70ch; }
+    .highlight-text { font-size: var(--fs-subtitle); font-weight: 600; color: var(--oh-primary); }
+    .caption { font-size: var(--fs-caption); color: var(--oh-gray); }
+
+    .bullet-list { list-style: none; text-align: left; width: 100%; max-width: min(80vw, 800px); }
+    .bullet-list li { font-size: var(--fs-body); padding: var(--space-xs) 0; padding-left: var(--space-md); position: relative; line-height: 1.8; }
+    .bullet-list li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; background: var(--oh-primary); border-radius: var(--radius-full); }
+
+    .numbered-list { list-style: none; text-align: left; width: 100%; max-width: min(80vw, 800px); counter-reset: item; }
+    .numbered-list li { font-size: var(--fs-body); padding: var(--space-sm) 0; padding-left: var(--space-xl); position: relative; counter-increment: item; }
+    .numbered-list li::before { content: counter(item); position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: clamp(28px, 3vw, 36px); height: clamp(28px, 3vw, 36px); background: var(--oh-primary); color: var(--oh-white); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-caption); }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: var(--space-md); width: 100%; max-width: min(90vw, 1000px); }
+    .card { background: var(--oh-white); border-radius: var(--radius-md); padding: var(--space-md); box-shadow: var(--shadow-sm); border: 1px solid var(--oh-gray-light); transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); text-align: left; }
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .card-dark { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--oh-white); }
+    .card-dark:hover { background: rgba(255, 255, 255, 0.08); }
+    .card-icon { font-size: clamp(1.5rem, 3vw, 2.5rem); margin-bottom: var(--space-xs); }
+    .card-title { font-size: var(--fs-body); font-weight: 700; margin-bottom: var(--space-xs); }
+    .card-description { font-size: var(--fs-caption); color: var(--oh-gray); line-height: 1.6; }
+    .card-dark .card-description { color: rgba(255, 255, 255, 0.6); }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: var(--space-md); width: 100%; max-width: min(90vw, 900px); }
+    .stat-item { text-align: center; padding: var(--space-md); }
+    .stat-number { font-family: var(--font-display); font-size: var(--fs-hero); font-weight: 800; color: var(--oh-primary); line-height: 1; }
+    .stat-label { font-size: var(--fs-caption); color: var(--oh-gray); margin-top: var(--space-xs); }
+
+    .quote-block { max-width: min(80vw, 700px); padding: var(--space-lg); position: relative; }
+    .quote-block::before { content: '\201C'; font-family: var(--font-display); font-size: clamp(4rem, 10vw, 8rem); color: var(--oh-primary); opacity: 0.2; position: absolute; top: calc(-1 * var(--space-sm)); left: calc(-1 * var(--space-sm)); line-height: 1; }
+    .quote-text { font-size: var(--fs-subtitle); font-style: italic; line-height: 1.8; color: var(--oh-white); }
+    .quote-author { font-size: var(--fs-caption); color: rgba(255,255,255,0.5); margin-top: var(--space-sm); }
+
+    .comparison-table { width: 100%; max-width: min(90vw, 900px); border-collapse: collapse; }
+    .comparison-table th, .comparison-table td { padding: var(--space-sm) var(--space-md); text-align: left; font-size: var(--fs-caption); border-bottom: 1px solid var(--oh-gray-light); }
+    .comparison-table th { font-weight: 700; color: var(--oh-secondary); background: var(--oh-light); }
+    .comparison-table tr:last-child td { border-bottom: none; }
+
+    .tag { display: inline-block; padding: var(--space-xs) var(--space-sm); background: var(--oh-light); color: var(--oh-secondary); border-radius: var(--radius-sm); font-size: var(--fs-small); font-weight: 600; }
+    .tag-primary { background: var(--oh-primary); color: var(--oh-white); }
+
+    .steps { display: flex; align-items: flex-start; gap: var(--space-md); width: 100%; max-width: min(90vw, 1000px); }
+    .step { flex: 1; text-align: center; position: relative; }
+    .step::after { content: '\2192'; position: absolute; right: calc(-1 * var(--space-md) / 2 - 0.5em); top: clamp(14px, 2vw, 20px); font-size: var(--fs-body); color: var(--oh-gray); }
+    .step:last-child::after { display: none; }
+    .step-number { width: clamp(32px, 4vw, 48px); height: clamp(32px, 4vw, 48px); background: var(--oh-primary); color: var(--oh-white); border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: var(--fs-body); margin-bottom: var(--space-xs); }
+    .step-title { font-size: var(--fs-caption); font-weight: 700; }
+    .step-desc { font-size: var(--fs-small); color: var(--oh-gray); }
+
+    .cta-button { display: inline-block; padding: var(--space-sm) var(--space-lg); background: var(--oh-primary); color: var(--oh-white); border-radius: var(--radius-lg); font-size: var(--fs-body); font-weight: 700; text-decoration: none; transition: all var(--duration-fast) var(--ease-out); box-shadow: var(--shadow-md); }
+    .cta-button:hover { background: var(--oh-primary-light); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+    .divider { width: 60px; height: 4px; background: var(--oh-primary); border-radius: 2px; }
+    .circle-decoration { position: absolute; border-radius: var(--radius-full); opacity: 0.05; pointer-events: none; }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out); }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+    .slide.visible .reveal:nth-child(1) { transition-delay: 0s; }
+    .slide.visible .reveal:nth-child(2) { transition-delay: 0.1s; }
+    .slide.visible .reveal:nth-child(3) { transition-delay: 0.2s; }
+    .slide.visible .reveal:nth-child(4) { transition-delay: 0.3s; }
+    .slide.visible .reveal:nth-child(5) { transition-delay: 0.4s; }
+    .slide.visible .reveal:nth-child(6) { transition-delay: 0.5s; }
+
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--oh-gradient); z-index: 100; transition: width var(--duration-normal) var(--ease-out); }
+    .nav-dots { position: fixed; right: var(--space-md); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: var(--space-xs); z-index: 100; }
+    .nav-dot { width: 10px; height: 10px; border-radius: var(--radius-full); background: rgba(255, 255, 255, 0.3); border: none; cursor: pointer; transition: all var(--duration-fast) var(--ease-out); padding: 0; }
+    .nav-dot.active { background: var(--oh-primary); transform: scale(1.3); }
+    .slide-counter { position: fixed; bottom: var(--space-md); right: var(--space-md); font-family: var(--font-display); font-size: var(--fs-small); color: rgba(255, 255, 255, 0.4); z-index: 100; }
+
+    @media (max-width: 768px) {
+      .steps { flex-direction: column; }
+      .step::after { content: '\2193'; position: static; display: block; margin: var(--space-xs) 0; }
+      .card-grid { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-dots { display: none; }
+    }
+    @media (max-height: 600px) { .slide { padding: var(--space-sm); } .nav-dots { display: none; } }
+    @media (max-height: 500px) { .slide-content { gap: var(--space-xs); } }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition-duration: 0.01ms !important; }
+      .slide.visible .reveal { transition-duration: 0.01ms !important; }
+      html { scroll-behavior: auto; }
+    }
+    @media print {
+      .slide { height: auto; min-height: 100vh; page-break-after: always; page-break-inside: avoid; }
+      .progress-bar, .nav-dots, .slide-counter { display: none; }
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    /* --- ライトスライド上の引用ブロック用 --- */
+    .slide.content-slide .quote-text { color: var(--oh-secondary); }
+    .slide.content-slide .quote-author { color: var(--oh-gray); }
+  </style>
+</head>
+<body>
+
+  <!-- プログレスバー -->
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="slide-counter" id="slideCounter"></div>
+
+  <!-- ===== スライド 1: タイトル ===== -->
+  <section class="slide title-slide">
+    <div class="slide-content">
+      <div class="reveal main-title">AI時代の資料作成革命</div>
+      <div class="reveal subtitle">Claude Code × HTMLで実現するハイクオリティ資料</div>
+      <div class="reveal author">OpenHeart Format — 2026.03.19</div>
+    </div>
+    <div class="circle-decoration" style="width: 500px; height: 500px; background: var(--oh-primary); top: -150px; right: -150px;"></div>
+    <div class="circle-decoration" style="width: 350px; height: 350px; background: var(--oh-accent); bottom: -100px; left: -100px;"></div>
+  </section>
+
+  <!-- ===== スライド 2: 課題提起 ===== -->
+  <section class="slide section-slide">
+    <div class="slide-content">
+      <div class="reveal section-number">01</div>
+      <div class="reveal section-title">なぜ今、資料作成を変えるのか</div>
+      <div class="reveal divider"></div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 3: 従来の問題 ===== -->
+  <section class="slide content-slide">
+    <div class="slide-content left-align">
+      <h2 class="reveal slide-heading">従来の資料作成の<span class="accent">3つの壁</span></h2>
+      <ul class="reveal bullet-list">
+        <li>デザインスキルが必要 — 見た目を整えるのに膨大な時間</li>
+        <li>フォーマットの制約 — PowerPoint/Keynoteの操作に振り回される</li>
+        <li>コンテンツとデザインの分離困難 — 内容に集中できない</li>
+        <li>バージョン管理が煩雑 — 修正履歴が追いにくい</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== スライド 4: 数値で見る課題 ===== -->
+  <section class="slide content-slide-dark">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">資料作成にかかる<span class="accent">隠れたコスト</span></h2>
+      <div class="reveal stat-grid">
+        <div class="stat-item">
+          <div class="stat-number">2日</div>
+          <div class="stat-label">平均的な登壇資料の作成時間</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">60%</div>
+          <div class="stat-label">デザイン調整に費やす割合</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">30回</div>
+          <div class="stat-label">レビュー・修正の平均往復回数</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 5: 発想の転換 ===== -->
+  <section class="slide content-slide-dark">
+    <div class="slide-content">
+      <div class="reveal quote-block">
+        <p class="quote-text">人間時代のアウトプット形式を疑って、AIが得意な形式に出力をずらす</p>
+        <p class="quote-author">— AI時代の資料作成における設計思想</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 6: ソリューション ===== -->
+  <section class="slide section-slide">
+    <div class="slide-content">
+      <div class="reveal section-number">02</div>
+      <div class="reveal section-title">OpenHeart Formatとは</div>
+      <div class="reveal divider"></div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 7: コンセプト ===== -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">AIが最も得意な形式で<span class="accent">資料を作る</span></h2>
+      <div class="reveal card-grid">
+        <div class="card">
+          <div class="card-icon">&#x1f310;</div>
+          <div class="card-title">HTML/CSS/JS</div>
+          <div class="card-description">AIが最も精度高く生成できるフォーマット。レイアウト自由度が圧倒的に高い</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#x1f4e6;</div>
+          <div class="card-title">単一ファイル</div>
+          <div class="card-description">外部依存なし。ブラウザで開くだけで完全なプレゼンテーションが動作</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#x1f3a8;</div>
+          <div class="card-title">デザインシステム</div>
+          <div class="card-description">統一されたカラーパレット、タイポグラフィ、アニメーションで品質を担保</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 8: ワークフロー ===== -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">作成フロー</h2>
+      <div class="reveal steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-title">骨子作成</div>
+          <div class="step-desc">Markdownで構成を設計</div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">構造化</div>
+          <div class="step-desc">YAMLで各スライドを定義</div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">HTML生成</div>
+          <div class="step-desc">Claude Codeが一括出力</div>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-title">レビュー</div>
+          <div class="step-desc">ブラウザで即座に確認</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 9: Before / After ===== -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">Before / <span class="accent">After</span></h2>
+      <table class="reveal comparison-table">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>従来 (PowerPoint)</th>
+            <th>OpenHeart Format</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>作成時間</td>
+            <td>2日</td>
+            <td><strong style="color: var(--oh-primary);">3時間</strong></td>
+          </tr>
+          <tr>
+            <td>デザイン品質</td>
+            <td>スキルに依存</td>
+            <td><strong style="color: var(--oh-primary);">常にハイクオリティ</strong></td>
+          </tr>
+          <tr>
+            <td>レスポンシブ</td>
+            <td>非対応</td>
+            <td><strong style="color: var(--oh-primary);">完全対応</strong></td>
+          </tr>
+          <tr>
+            <td>バージョン管理</td>
+            <td>ファイル名管理</td>
+            <td><strong style="color: var(--oh-primary);">Git管理</strong></td>
+          </tr>
+          <tr>
+            <td>共有方法</td>
+            <td>ファイル送付</td>
+            <td><strong style="color: var(--oh-primary);">URLで共有</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== スライド 10: 特徴 ===== -->
+  <section class="slide section-slide">
+    <div class="slide-content">
+      <div class="reveal section-number">03</div>
+      <div class="reveal section-title">OpenHeart Formatの特徴</div>
+      <div class="reveal divider"></div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 11: デザインシステム ===== -->
+  <section class="slide content-slide-dark">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">統一された<span class="accent">デザインシステム</span></h2>
+      <div class="reveal card-grid">
+        <div class="card card-dark">
+          <div class="card-icon">&#x1f3af;</div>
+          <div class="card-title">ビューポートフィッティング</div>
+          <div class="card-description">全スライドが画面にぴったり収まる。はみ出し・スクロール一切なし</div>
+        </div>
+        <div class="card card-dark">
+          <div class="card-icon">&#x2728;</div>
+          <div class="card-title">レスポンシブタイポグラフィ</div>
+          <div class="card-description">clamp()によるフォントサイズで、あらゆる画面サイズに自動適応</div>
+        </div>
+        <div class="card card-dark">
+          <div class="card-icon">&#x1f680;</div>
+          <div class="card-title">スタガーアニメーション</div>
+          <div class="card-description">要素が順番にフェードインする洗練されたアニメーション効果</div>
+        </div>
+        <div class="card card-dark">
+          <div class="card-icon">&#x2699;&#xfe0f;</div>
+          <div class="card-title">キーボード＆タッチ対応</div>
+          <div class="card-description">矢印キー、スワイプ、マウスホイールでスムーズにナビゲーション</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 12: スタイルバリエーション ===== -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">3つの<span class="accent">スタイルバリエーション</span></h2>
+      <div class="reveal card-grid">
+        <div class="card" style="border-left: 4px solid var(--oh-dark);">
+          <div class="card-title">Dark</div>
+          <div class="card-description">ダークネイビー背景。登壇・プレゼンに最適。映像映えする高コントラスト</div>
+          <div style="margin-top: var(--space-xs);"><span class="tag">登壇向け</span></div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--oh-accent);">
+          <div class="card-title">Light</div>
+          <div class="card-description">ホワイト背景。資料配布・印刷に最適。読みやすさを最優先</div>
+          <div style="margin-top: var(--space-xs);"><span class="tag">配布向け</span></div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--oh-primary);">
+          <div class="card-title">Gradient</div>
+          <div class="card-description">グラデーション活用。ブランディング・マーケに最適。印象に残る演出</div>
+          <div style="margin-top: var(--space-xs);"><span class="tag-primary tag">ブランド向け</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 13: まとめ ===== -->
+  <section class="slide section-slide">
+    <div class="slide-content">
+      <div class="reveal section-number">04</div>
+      <div class="reveal section-title">まとめ</div>
+      <div class="reveal divider"></div>
+    </div>
+  </section>
+
+  <!-- ===== スライド 14: 要点 ===== -->
+  <section class="slide content-slide">
+    <div class="slide-content left-align">
+      <h2 class="reveal slide-heading">OpenHeart Formatで変わること</h2>
+      <ol class="reveal numbered-list">
+        <li>資料作成時間が <strong>2日 → 3時間</strong> に短縮</li>
+        <li>デザインスキル不要で <strong>プロ品質</strong> を実現</li>
+        <li>レスポンシブで <strong>あらゆるデバイス</strong> に対応</li>
+        <li>Gitで <strong>バージョン管理</strong> ・チーム共有が容易</li>
+        <li>Claude Codeとの統合で <strong>継続的な改善</strong> が可能</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== スライド 15: CTA ===== -->
+  <section class="slide title-slide">
+    <div class="slide-content">
+      <div class="reveal main-title">Thank You</div>
+      <div class="reveal subtitle">OpenHeart Formatで、資料作成をもっとクリエイティブに</div>
+      <div class="reveal" style="margin-top: var(--space-md);">
+        <span class="tag" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-size: var(--fs-caption);">← / → キーまたはスワイプで操作</span>
+      </div>
+    </div>
+    <div class="circle-decoration" style="width: 400px; height: 400px; background: var(--oh-primary); bottom: -120px; right: -120px;"></div>
+    <div class="circle-decoration" style="width: 300px; height: 300px; background: var(--oh-accent); top: -80px; left: -80px;"></div>
+  </section>
+
+  <!-- ============================================================
+       JavaScript
+       ============================================================ -->
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.isAnimating = false;
+        this.touchStartY = 0;
+        this.touchStartX = 0;
+        this.init();
+      }
+
+      init() {
+        this.createNavDots();
+        this.updateSlide(0);
+        this.bindEvents();
+      }
+
+      createNavDots() {
+        const container = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.classList.add('nav-dot');
+          dot.setAttribute('aria-label', `Slide ${i + 1}`);
+          dot.addEventListener('click', () => this.goToSlide(i));
+          container.appendChild(dot);
+        });
+      }
+
+      bindEvents() {
+        document.addEventListener('keydown', (e) => {
+          switch (e.key) {
+            case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+              e.preventDefault(); this.nextSlide(); break;
+            case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+              e.preventDefault(); this.prevSlide(); break;
+            case 'Home': e.preventDefault(); this.goToSlide(0); break;
+            case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+          }
+        });
+
+        document.addEventListener('wheel', (e) => {
+          if (this.isAnimating) return;
+          if (e.deltaY > 30) this.nextSlide();
+          else if (e.deltaY < -30) this.prevSlide();
+        }, { passive: true });
+
+        document.addEventListener('touchstart', (e) => {
+          this.touchStartY = e.touches[0].clientY;
+          this.touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+          const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+          const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+          if (Math.max(Math.abs(deltaY), Math.abs(deltaX)) < 50) return;
+          if (Math.abs(deltaY) > Math.abs(deltaX)) {
+            deltaY > 0 ? this.nextSlide() : this.prevSlide();
+          } else {
+            deltaX > 0 ? this.nextSlide() : this.prevSlide();
+          }
+        }, { passive: true });
+      }
+
+      goToSlide(index) {
+        if (this.isAnimating || index === this.currentSlide) return;
+        if (index < 0 || index >= this.slides.length) return;
+        this.isAnimating = true;
+        this.currentSlide = index;
+        this.updateSlide(index);
+        setTimeout(() => { this.isAnimating = false; }, 600);
+      }
+
+      nextSlide() { if (this.currentSlide < this.slides.length - 1) this.goToSlide(this.currentSlide + 1); }
+      prevSlide() { if (this.currentSlide > 0) this.goToSlide(this.currentSlide - 1); }
+
+      updateSlide(index) {
+        this.slides[index].scrollIntoView({ behavior: 'smooth' });
+        this.slides.forEach((slide, i) => slide.classList.toggle('visible', i === index));
+        document.getElementById('progressBar').style.width = `${((index + 1) / this.slides.length) * 100}%`;
+        document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === index));
+        document.getElementById('slideCounter').textContent = `${index + 1} / ${this.slides.length}`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+  </script>
+
+</body>
+</html>

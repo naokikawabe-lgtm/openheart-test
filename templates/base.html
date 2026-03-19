@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{PRESENTATION_TITLE}}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@700;800;900&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       OpenHeart Theme CSS（インライン）
+       実際の生成時は templates/openheart-theme.css の内容をここに埋め込む
+       ============================================================ */
+
+    /* --- ここに openheart-theme.css の全内容を貼り付け --- */
+
+  </style>
+</head>
+<body>
+
+  <!-- プログレスバー -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- ナビゲーションドット -->
+  <div class="nav-dots" id="navDots"></div>
+
+  <!-- スライドカウンター -->
+  <div class="slide-counter" id="slideCounter"></div>
+
+  <!-- ============================================================
+       スライド定義
+       各スライドは .slide クラスを持つ <section> 要素
+       ============================================================ -->
+
+  <!-- スライド1: タイトル -->
+  <section class="slide title-slide">
+    <div class="slide-content">
+      <div class="reveal main-title">{{MAIN_TITLE}}</div>
+      <div class="reveal subtitle">{{SUBTITLE}}</div>
+      <div class="reveal author">{{AUTHOR}} — {{DATE}}</div>
+    </div>
+    <!-- 装飾（オプション） -->
+    <div class="circle-decoration" style="width: 400px; height: 400px; background: var(--oh-primary); top: -100px; right: -100px;"></div>
+    <div class="circle-decoration" style="width: 300px; height: 300px; background: var(--oh-accent); bottom: -80px; left: -80px;"></div>
+  </section>
+
+  <!-- スライド2: セクション -->
+  <section class="slide section-slide">
+    <div class="slide-content">
+      <div class="reveal section-number">01</div>
+      <div class="reveal section-title">{{SECTION_TITLE}}</div>
+      <div class="reveal divider"></div>
+    </div>
+  </section>
+
+  <!-- スライド3: コンテンツ（箇条書き） -->
+  <section class="slide content-slide">
+    <div class="slide-content left-align">
+      <h2 class="reveal slide-heading">{{HEADING}}</h2>
+      <ul class="reveal bullet-list">
+        <li>ポイント1の内容</li>
+        <li>ポイント2の内容</li>
+        <li>ポイント3の内容</li>
+        <li>ポイント4の内容</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- スライド4: カードグリッド -->
+  <section class="slide content-slide-dark">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">{{HEADING}}</h2>
+      <div class="reveal card-grid">
+        <div class="card card-dark">
+          <div class="card-icon">🎯</div>
+          <div class="card-title">カードタイトル1</div>
+          <div class="card-description">説明テキスト</div>
+        </div>
+        <div class="card card-dark">
+          <div class="card-icon">🚀</div>
+          <div class="card-title">カードタイトル2</div>
+          <div class="card-description">説明テキスト</div>
+        </div>
+        <div class="card card-dark">
+          <div class="card-icon">💡</div>
+          <div class="card-title">カードタイトル3</div>
+          <div class="card-description">説明テキスト</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- スライド5: 統計・数値 -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">{{HEADING}}</h2>
+      <div class="reveal stat-grid">
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">ラベル1</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">3x</div>
+          <div class="stat-label">ラベル2</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">ラベル3</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- スライド6: 引用 -->
+  <section class="slide content-slide-dark">
+    <div class="slide-content">
+      <div class="reveal quote-block">
+        <p class="quote-text">{{QUOTE_TEXT}}</p>
+        <p class="quote-author">— {{QUOTE_AUTHOR}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- スライド7: ステップ表示 -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">{{HEADING}}</h2>
+      <div class="reveal steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-title">ステップ1</div>
+          <div class="step-desc">説明</div>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">ステップ2</div>
+          <div class="step-desc">説明</div>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">ステップ3</div>
+          <div class="step-desc">説明</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- スライド8: CTA（最終スライド） -->
+  <section class="slide title-slide">
+    <div class="slide-content">
+      <div class="reveal main-title">Thank You</div>
+      <div class="reveal subtitle">{{CLOSING_MESSAGE}}</div>
+      <div class="reveal" style="margin-top: var(--space-md);">
+        <a href="{{CTA_URL}}" class="cta-button">{{CTA_TEXT}}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       JavaScript: ナビゲーション＆アニメーション
+       ============================================================ -->
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.isAnimating = false;
+        this.touchStartY = 0;
+        this.touchStartX = 0;
+
+        this.init();
+      }
+
+      init() {
+        this.createNavDots();
+        this.updateSlide(0);
+        this.bindEvents();
+      }
+
+      createNavDots() {
+        const container = document.getElementById('navDots');
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.classList.add('nav-dot');
+          dot.setAttribute('aria-label', `スライド ${i + 1}`);
+          dot.addEventListener('click', () => this.goToSlide(i));
+          container.appendChild(dot);
+        });
+      }
+
+      bindEvents() {
+        // キーボード
+        document.addEventListener('keydown', (e) => {
+          switch (e.key) {
+            case 'ArrowDown':
+            case 'ArrowRight':
+            case ' ':
+            case 'PageDown':
+              e.preventDefault();
+              this.nextSlide();
+              break;
+            case 'ArrowUp':
+            case 'ArrowLeft':
+            case 'PageUp':
+              e.preventDefault();
+              this.prevSlide();
+              break;
+            case 'Home':
+              e.preventDefault();
+              this.goToSlide(0);
+              break;
+            case 'End':
+              e.preventDefault();
+              this.goToSlide(this.slides.length - 1);
+              break;
+          }
+        });
+
+        // マウスホイール
+        document.addEventListener('wheel', (e) => {
+          if (this.isAnimating) return;
+          if (e.deltaY > 30) this.nextSlide();
+          else if (e.deltaY < -30) this.prevSlide();
+        }, { passive: true });
+
+        // タッチ
+        document.addEventListener('touchstart', (e) => {
+          this.touchStartY = e.touches[0].clientY;
+          this.touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+          const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+          const deltaX = this.touchStartX - e.changedTouches[0].clientX;
+          const absDeltaY = Math.abs(deltaY);
+          const absDeltaX = Math.abs(deltaX);
+
+          if (Math.max(absDeltaY, absDeltaX) < 50) return;
+
+          if (absDeltaY > absDeltaX) {
+            if (deltaY > 0) this.nextSlide();
+            else this.prevSlide();
+          } else {
+            if (deltaX > 0) this.nextSlide();
+            else this.prevSlide();
+          }
+        }, { passive: true });
+      }
+
+      goToSlide(index) {
+        if (this.isAnimating || index === this.currentSlide) return;
+        if (index < 0 || index >= this.slides.length) return;
+
+        this.isAnimating = true;
+        this.currentSlide = index;
+        this.updateSlide(index);
+
+        setTimeout(() => {
+          this.isAnimating = false;
+        }, 600);
+      }
+
+      nextSlide() {
+        if (this.currentSlide < this.slides.length - 1) {
+          this.goToSlide(this.currentSlide + 1);
+        }
+      }
+
+      prevSlide() {
+        if (this.currentSlide > 0) {
+          this.goToSlide(this.currentSlide - 1);
+        }
+      }
+
+      updateSlide(index) {
+        // スクロール
+        this.slides[index].scrollIntoView({ behavior: 'smooth' });
+
+        // visible クラス管理
+        this.slides.forEach((slide, i) => {
+          slide.classList.toggle('visible', i === index);
+        });
+
+        // プログレスバー
+        const progress = ((index + 1) / this.slides.length) * 100;
+        document.getElementById('progressBar').style.width = `${progress}%`;
+
+        // ナビドット
+        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+
+        // カウンター
+        document.getElementById('slideCounter').textContent =
+          `${index + 1} / ${this.slides.length}`;
+      }
+    }
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', () => {
+      new SlidePresentation();
+    });
+  </script>
+
+</body>
+</html>
