@@ -8,123 +8,235 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- ヘッダー -->
     <header>
         <div class="header-content">
-            <h1>OpenHeart 財務ダッシュボード</h1>
-            <div class="header-meta">
-                <span id="current-date"></span>
-                <span class="separator">|</span>
-                <span id="fiscal-period"></span>
+            <div class="header-left">
+                <h1>OpenHeart 財務ダッシュボード</h1>
+                <div class="header-meta">
+                    <span id="current-date"></span>
+                    <span class="separator">|</span>
+                    <span id="fiscal-period">2025年度</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="sync-info">
+                    <span class="sync-label">最終同期:</span>
+                    <span id="last-synced"></span>
+                </div>
+                <button class="sync-btn" id="sync-btn">
+                    <span class="sync-icon">&#8635;</span> boardデータ同期
+                </button>
             </div>
         </div>
     </header>
 
+    <!-- タブナビゲーション -->
+    <nav class="tab-nav">
+        <button class="tab active" data-tab="dashboard">ダッシュボード</button>
+        <button class="tab" data-tab="cashflow">キャッシュフロー</button>
+        <button class="tab" data-tab="budget">予実管理</button>
+        <button class="tab" data-tab="checks">月末月初チェック</button>
+        <button class="tab" data-tab="projects">案件別損益</button>
+    </nav>
+
     <main>
-        <!-- KPI カード -->
-        <section class="kpi-section">
-            <div class="kpi-card">
-                <div class="kpi-label">現預金残高</div>
-                <div class="kpi-value" id="cash-balance"></div>
-                <div class="kpi-change" id="cash-balance-change"></div>
+        <!-- ============================================ -->
+        <!-- ダッシュボードタブ -->
+        <!-- ============================================ -->
+        <section class="tab-content active" id="tab-dashboard">
+            <!-- ステータスフィルター -->
+            <div class="status-filter">
+                <span class="filter-label">受注ステータス:</span>
+                <button class="filter-btn active" data-status="confirmed">確定</button>
+                <button class="filter-btn" data-status="prospect">見込み</button>
+                <button class="filter-btn" data-status="potential">ポテンシャル</button>
+                <button class="filter-btn" data-status="all">すべて</button>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">月次バーンレート</div>
-                <div class="kpi-value" id="burn-rate"></div>
-                <div class="kpi-sub">過去3ヶ月平均</div>
+
+            <!-- KPIカード -->
+            <section class="kpi-section">
+                <div class="kpi-card">
+                    <div class="kpi-label">現預金残高</div>
+                    <div class="kpi-value" id="kpi-cash-balance"></div>
+                    <div class="kpi-sub" id="kpi-cash-date"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">月次バーンレート</div>
+                    <div class="kpi-value" id="kpi-burn-rate"></div>
+                    <div class="kpi-sub">固定費ベース</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">ランウェイ</div>
+                    <div class="kpi-value" id="kpi-runway"></div>
+                    <div class="kpi-sub" id="kpi-runway-sub"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">今月売上（確定）</div>
+                    <div class="kpi-value" id="kpi-monthly-revenue"></div>
+                    <div class="kpi-change" id="kpi-revenue-change"></div>
+                </div>
+                <div class="kpi-card accent">
+                    <div class="kpi-label">要対応チェック項目</div>
+                    <div class="kpi-value" id="kpi-check-count"></div>
+                    <div class="kpi-sub">月末月初チェック</div>
+                </div>
+            </section>
+
+            <!-- チャート -->
+            <section class="chart-section">
+                <div class="chart-container">
+                    <h3>月別 売上推移（受注ステータス別）</h3>
+                    <canvas id="revenue-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>月別 キャッシュフロー</h3>
+                    <canvas id="cashflow-overview-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- 変動検出 -->
+            <section class="card" id="changes-section">
+                <h3>前回同期からの変動検出</h3>
+                <div class="change-meta">
+                    比較対象: <span id="snapshot-date"></span> のスナップショット
+                </div>
+                <div id="changes-list"></div>
+            </section>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- キャッシュフロータブ -->
+        <!-- ============================================ -->
+        <section class="tab-content" id="tab-cashflow">
+            <h2 class="section-title">月別キャッシュフロー</h2>
+            <div class="chart-container" style="margin-bottom: 24px;">
+                <canvas id="cashflow-detail-chart"></canvas>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">ランウェイ</div>
-                <div class="kpi-value" id="runway"></div>
-                <div class="kpi-sub" id="runway-date"></div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">週次キャッシュフロー</div>
-                <div class="kpi-value" id="weekly-cf"></div>
-                <div class="kpi-change" id="weekly-cf-change"></div>
+            <div class="card">
+                <h3>入出金明細</h3>
+                <div class="table-wrapper">
+                    <table id="cashflow-table">
+                        <thead>
+                            <tr>
+                                <th>月</th>
+                                <th>入金合計</th>
+                                <th>出金合計</th>
+                                <th>キャッシュ増減</th>
+                                <th>残高（概算）</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cashflow-body"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
-        <!-- 週次ナビゲーション -->
-        <section class="week-nav">
-            <button id="prev-week" class="nav-btn">&larr; 前週</button>
-            <h2 id="selected-week"></h2>
-            <button id="next-week" class="nav-btn">翌週 &rarr;</button>
-        </section>
-
-        <!-- チャートセクション -->
-        <section class="chart-section">
-            <div class="chart-container">
-                <h3>週次キャッシュフロー推移</h3>
-                <canvas id="weekly-cashflow-chart"></canvas>
+        <!-- ============================================ -->
+        <!-- 予実管理タブ -->
+        <!-- ============================================ -->
+        <section class="tab-content" id="tab-budget">
+            <h2 class="section-title">予実管理</h2>
+            <div class="chart-container" style="margin-bottom: 24px;">
+                <canvas id="budget-chart"></canvas>
             </div>
-            <div class="chart-container">
-                <h3>現預金残高推移と予測</h3>
-                <canvas id="cash-balance-chart"></canvas>
-            </div>
-        </section>
-
-        <section class="chart-section">
-            <div class="chart-container">
-                <h3>収入・支出内訳（週次）</h3>
-                <canvas id="income-expense-chart"></canvas>
-            </div>
-            <div class="chart-container">
-                <h3>支出カテゴリ別構成</h3>
-                <canvas id="expense-breakdown-chart"></canvas>
-            </div>
-        </section>
-
-        <!-- 週次資金繰り明細 -->
-        <section class="detail-section">
-            <h3>週次資金繰り明細</h3>
-            <div class="table-wrapper">
-                <table id="weekly-detail-table">
-                    <thead>
-                        <tr>
-                            <th>項目</th>
-                            <th>カテゴリ</th>
-                            <th>金額</th>
-                            <th>備考</th>
-                        </tr>
-                    </thead>
-                    <tbody id="weekly-detail-body">
-                    </tbody>
-                    <tfoot id="weekly-detail-foot">
-                    </tfoot>
-                </table>
+            <div class="card">
+                <h3>月次予実比較</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>月</th>
+                                <th>予算（売上）</th>
+                                <th>実績（売上）</th>
+                                <th>達成率</th>
+                                <th>予算（費用）</th>
+                                <th>実績（費用）</th>
+                                <th>差異</th>
+                            </tr>
+                        </thead>
+                        <tbody id="budget-body"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
-        <!-- 月次サマリー -->
-        <section class="detail-section">
-            <h3>月次サマリー</h3>
-            <div class="table-wrapper">
-                <table id="monthly-summary-table">
-                    <thead>
-                        <tr>
-                            <th>月</th>
-                            <th>収入合計</th>
-                            <th>支出合計</th>
-                            <th>収支</th>
-                            <th>月末残高</th>
-                            <th>バーンレート</th>
-                        </tr>
-                    </thead>
-                    <tbody id="monthly-summary-body">
-                    </tbody>
-                </table>
+        <!-- ============================================ -->
+        <!-- 月末月初チェックタブ -->
+        <!-- ============================================ -->
+        <section class="tab-content" id="tab-checks">
+            <h2 class="section-title">月末月初チェック業務</h2>
+            <p class="section-desc">boardのデータから、確認が必要な項目を自動一覧化しています。</p>
+
+            <div class="check-grid">
+                <div class="card check-card">
+                    <h3>受注未確定の案件</h3>
+                    <div class="check-count" id="check-unconfirmed-count"></div>
+                    <div id="check-unconfirmed"></div>
+                </div>
+                <div class="card check-card">
+                    <h3>請求書未発行</h3>
+                    <div class="check-count" id="check-uninvoiced-count"></div>
+                    <div id="check-uninvoiced"></div>
+                </div>
+                <div class="card check-card">
+                    <h3>入金未済</h3>
+                    <div class="check-count" id="check-unpaid-count"></div>
+                    <div id="check-unpaid"></div>
+                </div>
+                <div class="card check-card">
+                    <h3>発注未確定</h3>
+                    <div class="check-count" id="check-unordered-count"></div>
+                    <div id="check-unordered"></div>
+                </div>
+                <div class="card check-card">
+                    <h3>支払未済（外注費）</h3>
+                    <div class="check-count" id="check-unpaid-orders-count"></div>
+                    <div id="check-unpaid-orders"></div>
+                </div>
             </div>
         </section>
 
-        <!-- アラートセクション -->
-        <section class="alert-section" id="alert-section">
-            <h3>アラート・注意事項</h3>
-            <div id="alerts"></div>
+        <!-- ============================================ -->
+        <!-- 案件別損益タブ -->
+        <!-- ============================================ -->
+        <section class="tab-content" id="tab-projects">
+            <h2 class="section-title">案件別損益</h2>
+            <div class="status-filter" style="margin-bottom: 16px;">
+                <span class="filter-label">表示:</span>
+                <button class="filter-btn pj-filter active" data-pjstatus="all">全案件</button>
+                <button class="filter-btn pj-filter" data-pjstatus="confirmed">確定のみ</button>
+                <button class="filter-btn pj-filter" data-pjstatus="active">進行中のみ</button>
+            </div>
+            <div class="chart-container" style="margin-bottom: 24px;">
+                <canvas id="project-pl-chart"></canvas>
+            </div>
+            <div class="card">
+                <h3>案件別 売上・外注費・粗利</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>案件ID</th>
+                                <th>案件名</th>
+                                <th>クライアント</th>
+                                <th>ステータス</th>
+                                <th>売上合計</th>
+                                <th>外注費合計</th>
+                                <th>粗利</th>
+                                <th>粗利率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="project-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer>
-        <p>OpenHeart Financial Dashboard v1.0 | データ更新: <span id="last-updated"></span></p>
+        <p>OpenHeart Financial Dashboard v2.0 | Powered by board + Claude Code</p>
     </footer>
 
     <script src="data.js"></script>
