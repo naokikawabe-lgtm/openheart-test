@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-03-19T00:00:00Z",
+  "actions": [
+    {
+      "id": "action-001",
+      "name": "daily-market-research",
+      "description": "毎日の市場動向・競合情報の収集と要約",
+      "script": "scripts/research.sh",
+      "schedule": "daily",
+      "status": "approved",
+      "output": "data/market/"
+    },
+    {
+      "id": "action-002",
+      "name": "strategy-generation",
+      "description": "収集データに基づく経営戦略文書の生成",
+      "script": "scripts/strategy.sh",
+      "schedule": "on-demand",
+      "status": "approved",
+      "output": "strategies/"
+    },
+    {
+      "id": "action-003",
+      "name": "proposal-generation",
+      "description": "顧客向け提案資料の自動生成",
+      "script": "scripts/proposal.sh",
+      "schedule": "on-demand",
+      "status": "approved",
+      "output": "proposals/"
+    },
+    {
+      "id": "action-004",
+      "name": "minutes-processing",
+      "description": "議事録の整理・要約・アクションアイテム抽出",
+      "script": "scripts/minutes.sh",
+      "schedule": "on-demand",
+      "status": "approved",
+      "output": "data/minutes/"
+    }
+  ]
+}
