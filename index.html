@@ -20,12 +20,19 @@
                 </div>
             </div>
             <div class="header-right">
+                <div class="freee-status" id="freee-status-badge">
+                    <span class="freee-dot disconnected"></span>
+                    <span id="freee-status-text">freee未接続</span>
+                </div>
                 <div class="sync-info">
                     <span class="sync-label">最終同期:</span>
                     <span id="last-synced"></span>
                 </div>
                 <button class="sync-btn" id="sync-btn">
                     <span class="sync-icon">&#8635;</span> boardデータ同期
+                </button>
+                <button class="sync-btn freee-sync-btn" id="freee-sync-btn" style="display:none">
+                    <span class="sync-icon">&#8635;</span> freee同期
                 </button>
             </div>
         </div>
@@ -38,6 +45,7 @@
         <button class="tab" data-tab="budget">予実管理</button>
         <button class="tab" data-tab="checks">月末月初チェック</button>
         <button class="tab" data-tab="projects">案件別損益</button>
+        <button class="tab" data-tab="freee">freee会計</button>
     </nav>
 
     <main>
@@ -233,13 +241,135 @@
                 </div>
             </div>
         </section>
+        <!-- ============================================ -->
+        <!-- freee会計タブ -->
+        <!-- ============================================ -->
+        <section class="tab-content" id="tab-freee">
+            <h2 class="section-title">freee会計 連携</h2>
+
+            <!-- 接続設定 -->
+            <div class="card" id="freee-connect-card">
+                <h3>freee会計との接続</h3>
+                <div id="freee-connection-ui">
+                    <div class="freee-setup-steps">
+                        <div class="setup-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <strong>freee開発者アプリを作成</strong>
+                                <p><a href="https://app.secure.freee.co.jp/developers/demo_companies/description" target="_blank">freee Developers</a> でOAuthアプリを作成し、Client IDとClient Secretを取得してください。</p>
+                                <p>コールバックURL: <code id="callback-url">http://localhost:3000/callback</code></p>
+                            </div>
+                        </div>
+                        <div class="setup-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <strong>サーバーを起動</strong>
+                                <p>環境変数を設定してサーバーを起動:</p>
+                                <pre class="code-block">FREEE_CLIENT_ID=your_id \
+FREEE_CLIENT_SECRET=your_secret \
+node server.js</pre>
+                            </div>
+                        </div>
+                        <div class="setup-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <strong>freeeアカウントを認証</strong>
+                                <button class="btn-primary" id="freee-auth-btn">freeeと連携する</button>
+                                <button class="btn-danger" id="freee-disconnect-btn" style="display:none">連携を解除</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="freee-status-detail" id="freee-status-detail" style="display:none">
+                        <div class="status-row">
+                            <span>接続状態</span>
+                            <span id="freee-detail-status" class="status-badge confirmed">接続済み</span>
+                        </div>
+                        <div class="status-row">
+                            <span>事業所ID</span>
+                            <span id="freee-detail-company"></span>
+                        </div>
+                        <div class="status-row">
+                            <span>トークン有効期限</span>
+                            <span id="freee-detail-expires"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- freee会計データ表示 -->
+            <div id="freee-data-section" style="display:none">
+                <!-- 口座残高 -->
+                <div class="card">
+                    <h3>口座残高（freee会計）</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>口座名</th>
+                                    <th>種別</th>
+                                    <th>残高</th>
+                                </tr>
+                            </thead>
+                            <tbody id="freee-accounts-body"></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2"><strong>合計</strong></td>
+                                    <td id="freee-accounts-total"><strong></strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 月別取引サマリー -->
+                <div class="chart-container" style="margin-bottom: 24px;">
+                    <h3>月別入出金（freee取引データ）</h3>
+                    <canvas id="freee-deals-chart"></canvas>
+                </div>
+
+                <!-- PL/BS -->
+                <section class="chart-section">
+                    <div class="card">
+                        <h3>損益計算書サマリー（PL）</h3>
+                        <div id="freee-pl-summary"></div>
+                    </div>
+                    <div class="card">
+                        <h3>貸借対照表サマリー（BS）</h3>
+                        <div id="freee-bs-summary"></div>
+                    </div>
+                </section>
+
+                <!-- 請求書一覧 -->
+                <div class="card">
+                    <h3>請求書一覧（freee）</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>請求書番号</th>
+                                    <th>取引先</th>
+                                    <th>発行日</th>
+                                    <th>期日</th>
+                                    <th>金額</th>
+                                    <th>ステータス</th>
+                                    <th>入金状況</th>
+                                </tr>
+                            </thead>
+                            <tbody id="freee-invoices-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
-        <p>OpenHeart Financial Dashboard v2.0 | Powered by board + Claude Code</p>
+        <p>OpenHeart Financial Dashboard v2.0 | Powered by board + freee + Claude Code</p>
     </footer>
 
     <script src="data.js"></script>
+    <script src="freee-api.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

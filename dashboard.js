@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initFilters();
     initSync();
+    initFreee();
     renderAll();
 });
 
@@ -721,6 +722,211 @@ function renderProjectsTab(filter) {
                         <div class="progress-bar-fill" style="width:${Math.min(gpRate, 100)}%;background:${gpRate >= 50 ? 'var(--success)' : gpRate >= 30 ? 'var(--warning)' : 'var(--danger)'}"></div>
                     </div>
                 </td>
+            </tr>`;
+    }).join('');
+}
+
+// ========================================
+// freee会計 連携
+// ========================================
+let freeeConnected = false;
+let freeeDealsChart;
+
+async function initFreee() {
+    try {
+        const status = await FreeeClient.getStatus();
+        updateFreeeStatusUI(status);
+    } catch {
+        console.log('freeeサーバーに接続できません。静的モードで動作します。');
+    }
+
+    document.getElementById('freee-auth-btn').addEventListener('click', async () => {
+        try {
+            const btn = document.getElementById('freee-auth-btn');
+            btn.disabled = true;
+            btn.textContent = '認証中...';
+            const success = await FreeeClient.startAuth();
+            if (success) {
+                const status = await FreeeClient.getStatus();
+                updateFreeeStatusUI(status);
+                await syncFreeeData();
+            }
+            btn.disabled = false;
+            btn.textContent = 'freeeと連携する';
+        } catch (err) {
+            alert('freee認証エラー: ' + err.message);
+            document.getElementById('freee-auth-btn').disabled = false;
+            document.getElementById('freee-auth-btn').textContent = 'freeeと連携する';
+        }
+    });
+
+    document.getElementById('freee-disconnect-btn').addEventListener('click', async () => {
+        if (!confirm('freeeとの連携を解除しますか？')) return;
+        await FreeeClient.disconnect();
+        const status = await FreeeClient.getStatus();
+        updateFreeeStatusUI(status);
+    });
+
+    document.getElementById('freee-sync-btn').addEventListener('click', async () => {
+        await syncFreeeData();
+    });
+}
+
+function updateFreeeStatusUI(status) {
+    freeeConnected = status.connected;
+    const dot = document.querySelector('.freee-dot');
+    const text = document.getElementById('freee-status-text');
+    const syncBtn = document.getElementById('freee-sync-btn');
+    const authBtn = document.getElementById('freee-auth-btn');
+    const disconnectBtn = document.getElementById('freee-disconnect-btn');
+    const statusDetail = document.getElementById('freee-status-detail');
+    const dataSection = document.getElementById('freee-data-section');
+
+    if (status.connected) {
+        dot.className = 'freee-dot connected';
+        text.textContent = 'freee接続済み';
+        syncBtn.style.display = '';
+        authBtn.style.display = 'none';
+        disconnectBtn.style.display = '';
+        statusDetail.style.display = '';
+        dataSection.style.display = '';
+        document.getElementById('freee-detail-status').textContent = '接続済み';
+        document.getElementById('freee-detail-status').className = 'status-badge confirmed';
+        document.getElementById('freee-detail-company').textContent = status.company_id || '-';
+        document.getElementById('freee-detail-expires').textContent =
+            status.expires_at ? new Date(status.expires_at).toLocaleString('ja-JP') : '-';
+    } else {
+        dot.className = 'freee-dot disconnected';
+        text.textContent = status.configured ? 'freee未認証' : 'freee未設定';
+        syncBtn.style.display = 'none';
+        authBtn.style.display = '';
+        authBtn.disabled = !status.configured;
+        disconnectBtn.style.display = 'none';
+        statusDetail.style.display = 'none';
+        dataSection.style.display = 'none';
+    }
+}
+
+async function syncFreeeData() {
+    const syncBtn = document.getElementById('freee-sync-btn');
+    syncBtn.classList.add('syncing');
+    syncBtn.innerHTML = '<span class="sync-icon">&#8635;</span> freee同期中...';
+    try {
+        const data = await FreeeClient.syncAll();
+        mergeFreeeData(data);
+        renderFreeeTab(data);
+        renderAll();
+        document.getElementById('last-synced').textContent = new Date().toLocaleString('ja-JP');
+    } catch (err) {
+        alert('freee同期エラー: ' + err.message);
+    } finally {
+        syncBtn.classList.remove('syncing');
+        syncBtn.innerHTML = '<span class="sync-icon">&#8635;</span> freee同期';
+    }
+}
+
+function renderFreeeTab(data) {
+    if (!data) return;
+
+    if (data.bankBalance) {
+        const tbody = document.getElementById('freee-accounts-body');
+        tbody.innerHTML = data.bankBalance.accounts.map(a => `
+            <tr>
+                <td><strong>${a.name}</strong></td>
+                <td>${a.type}</td>
+                <td class="amount-positive">${fmtFull(a.balance)}</td>
+            </tr>`).join('');
+        document.getElementById('freee-accounts-total').innerHTML =
+            `<strong class="amount-positive">${fmtFull(data.bankBalance.totalBalance)}</strong>`;
+    }
+
+    if (data.deals) renderFreeeDealsChart(data.deals);
+    if (data.trialPl) renderFreeePL(data.trialPl);
+    if (data.trialBs) renderFreeeBS(data.trialBs);
+    if (data.invoices) renderFreeeInvoices(data.invoices);
+}
+
+function renderFreeeDealsChart(deals) {
+    const ctx = document.getElementById('freee-deals-chart').getContext('2d');
+    if (freeeDealsChart) freeeDealsChart.destroy();
+
+    const months = Object.keys(deals).sort();
+    const incomes = months.map(m => deals[m].totalIncome);
+    const expenses = months.map(m => deals[m].totalExpense);
+    const net = months.map((m, i) => incomes[i] - expenses[i]);
+
+    freeeDealsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months.map(fmtMonth),
+            datasets: [
+                { label: '入金', data: incomes, backgroundColor: 'rgba(22, 163, 74, 0.6)' },
+                { label: '出金', data: expenses, backgroundColor: 'rgba(220, 38, 38, 0.5)' },
+                { label: '収支', data: net, type: 'line', borderColor: 'rgb(37, 99, 235)', borderWidth: 2, pointRadius: 4 },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: { tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmtFull(c.raw) } } },
+            scales: { y: { ticks: { callback: v => fmt(v) } } },
+        },
+    });
+}
+
+function renderFreeePL(pl) {
+    const container = document.getElementById('freee-pl-summary');
+    const items = [
+        { label: '売上高', value: pl.revenue },
+        { label: '売上原価', value: -pl.costOfSales },
+        { label: '売上総利益', value: pl.grossProfit, total: true },
+        { label: '販管費', value: -pl.sga },
+        { label: '営業利益', value: pl.operatingIncome, total: true },
+        { label: '経常利益', value: pl.ordinaryIncome },
+        { label: '当期純利益', value: pl.netIncome, total: true },
+    ];
+    container.innerHTML = items.map(item => `
+        <div class="pl-item ${item.total ? 'total' : ''}">
+            <span class="label">${item.label}</span>
+            <span class="${item.value >= 0 ? 'amount-positive' : 'amount-negative'}">${fmtFull(item.value)}</span>
+        </div>`).join('');
+}
+
+function renderFreeeBS(bs) {
+    const container = document.getElementById('freee-bs-summary');
+    const items = [
+        { label: '現金・預金', value: bs.cash },
+        { label: '流動資産', value: bs.currentAssets },
+        { label: '固定資産', value: bs.fixedAssets },
+        { label: '資産合計', value: bs.totalAssets, total: true },
+        { label: '流動負債', value: bs.currentLiabilities },
+        { label: '固定負債', value: bs.fixedLiabilities },
+        { label: '負債合計', value: bs.totalLiabilities, total: true },
+        { label: '純資産', value: bs.netAssets, total: true },
+    ];
+    container.innerHTML = items.map(item => `
+        <div class="bs-item ${item.total ? 'total' : ''}">
+            <span class="label">${item.label}</span>
+            <span>${fmtFull(item.value)}</span>
+        </div>`).join('');
+}
+
+function renderFreeeInvoices(invoices) {
+    const tbody = document.getElementById('freee-invoices-body');
+    const statusMap = { draft: '下書き', applying: '申請中', remanded: '差戻し', rejected: '却下', approved: '承認済', issued: '発行済', unsubmitted: '送付待ち' };
+    const paymentMap = { empty: '未設定', unsettled: '未入金', settled: '入金済' };
+
+    tbody.innerHTML = invoices.map(inv => {
+        const isOverdue = inv.paymentStatus !== 'settled' && inv.dueDate && inv.dueDate < new Date().toISOString().split('T')[0];
+        const payClass = inv.paymentStatus === 'settled' ? 'paid' : isOverdue ? 'overdue' : 'unpaid';
+        return `
+            <tr>
+                <td>${inv.invoiceNumber || '-'}</td>
+                <td><strong>${inv.partnerName}</strong></td>
+                <td>${inv.issueDate || '-'}</td>
+                <td>${inv.dueDate || '-'}</td>
+                <td class="amount-positive">${fmtFull(inv.totalAmount)}</td>
+                <td>${statusMap[inv.status] || inv.status || '-'}</td>
+                <td><span class="invoice-status ${payClass}">${paymentMap[inv.paymentStatus] || inv.paymentStatus || '-'}</span></td>
             </tr>`;
     }).join('');
 }

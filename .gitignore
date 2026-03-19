@@ -1,0 +1,13 @@
+# freee OAuth tokens (contains secrets)
+.freee-tokens.json
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
