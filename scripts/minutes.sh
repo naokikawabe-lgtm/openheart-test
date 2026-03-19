@@ -92,9 +92,9 @@ main() {
     build_prompt "$INPUT_FILE" > "$prompt_file"
     log "プロンプトを生成: $prompt_file"
 
-    # 出力先
+    # 出力先（meetings/ に記事の構成に合わせて出力）
     local input_basename=$(basename "$INPUT_FILE" | sed 's/\.[^.]*$//')
-    local output_file="$PROJECT_ROOT/data/minutes/${DATE}_${input_basename}_processed.md"
+    local output_file="$PROJECT_ROOT/meetings/${DATE}_${input_basename}.md"
 
     # Claude Code呼び出し
     if command -v claude &> /dev/null; then
@@ -114,7 +114,27 @@ main() {
     fi
 
     log "議事録を整理完了: $output_file"
+
+    # summary.md更新
+    update_summary "$output_file"
+
     log "=== 議事録整理 完了 ==="
+}
+
+update_summary() {
+    local output="$1"
+    local summary_file="$PROJECT_ROOT/summary.md"
+
+    if [ -f "$summary_file" ]; then
+        local filename
+        filename=$(basename "$output")
+        local new_row="| $DATE | $filename | 議事録 | $output |"
+        if grep -q "^| 日付 | 成果物" "$summary_file"; then
+            sed -i "/^| [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} .* | .*$/a $new_row" "$summary_file" 2>/dev/null || true
+        fi
+        sed -i "s/^\*\*最終更新\*\*:.*/\*\*最終更新\*\*: $DATE/" "$summary_file" 2>/dev/null || true
+        log "summary.md を更新しました"
+    fi
 }
 
 main "$@"

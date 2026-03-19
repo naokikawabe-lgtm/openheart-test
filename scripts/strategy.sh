@@ -146,6 +146,9 @@ main() {
     # TASKS.md更新
     update_tasks "戦略文書生成" "$output_file"
 
+    # summary.md更新
+    update_summary "戦略文書" "$output_file"
+
     log "=== 経営戦略立案 完了 ==="
 }
 
@@ -158,6 +161,25 @@ update_tasks() {
         local task_id="T-$(date +%s | tail -c 4)"
         local new_row="| $task_id | $task_name | completed | system | - | $DATE |"
         sed -i "/^| T-/a $new_row" "$tasks_file" 2>/dev/null || true
+    fi
+}
+
+update_summary() {
+    local doc_type="$1"
+    local output="$2"
+    local summary_file="$PROJECT_ROOT/summary.md"
+
+    if [ -f "$summary_file" ]; then
+        local filename
+        filename=$(basename "$output")
+        local new_row="| $DATE | $filename | $doc_type | $output |"
+        # 成果物一覧テーブルに追記
+        if grep -q "^| 日付 | 成果物" "$summary_file"; then
+            sed -i "/^| [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} .* | .*$/a $new_row" "$summary_file" 2>/dev/null || true
+        fi
+        # 最終更新日を更新
+        sed -i "s/^\*\*最終更新\*\*:.*/\*\*最終更新\*\*: $DATE/" "$summary_file" 2>/dev/null || true
+        log "summary.md を更新しました"
     fi
 }
 

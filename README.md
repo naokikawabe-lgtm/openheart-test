@@ -1,108 +1,100 @@
-# OpenHeart Business Automation
+# OpenHeart コンサルティング業務基盤
 
-OpenHeartの経営業務を自動化するClaude Codeベースのフレームワーク。
-戦略立案、顧客提案資料作成、市場調査、議事録整理をプロジェクトフォルダ起点で一元管理します。
+Claude CodeとGitでコンサルティング業務を完結させるためのフレームワーク。
 
-## 概要
+提案資料の作成、暗黙知のスキル化、案件情報の管理を一続きに扱います。
 
-プロジェクトフォルダ内に全情報をMarkdownで集約し、Claude Codeを活用して以下の業務を自動化します:
+## 3つのテーマ
 
-- **経営戦略立案**: 市場データ＋社内データ → PEST/SWOT/5Forces分析付き戦略文書
-- **顧客提案資料**: 顧客情報＋戦略 → カスタマイズされた提案書
-- **市場調査・競合分析**: テーマ指定 → 構造化された調査レポート
-- **議事録整理**: 会議メモ・文字起こし → 構造化議事録＋アクションアイテム
+### 1. 提案スライドをClaude Codeで作る
+
+考える作業と整形する作業を分離し、3ステップで進める:
+
+```
+Step 1: Markdownでストーリーとメッセージラインを書く
+       → 資料の軸を先に固める（PowerPointはまだ触らない）
+
+Step 2: Plan Modeでスライド構成を設計する
+       → 11種のレイアウトパターンから逆引きで選定
+
+Step 3: テンプレートのXMLを編集してPPTXを生成する
+       → 生成→QA→修正のサイクルをGitで記録
+```
+
+```bash
+# 提案資料のMarkdown構成を生成
+./scripts/proposal.sh "株式会社ABC" "DX推進コンサルティング"
+
+# Markdown → PPTX変換
+./scripts/slide-gen.sh deliverables/2026-03-19_提案資料.md
+```
+
+### 2. コンサルの暗黙知をスキル化する
+
+判断基準やベストプラクティスを `.claude/skills/` にスキルファイルとして配置。
+AIが関連タスクを検出したときに自動で参照・適用する。
+
+```
+.claude/skills/
+├── pptx/                    # スライド生成スキル
+│   ├── SKILL.md             #   スキル定義（いつ・どう使うか）
+│   └── editing.md           #   テンプレートからの編集手順
+├── consulting/              # コンサルティング暗黙知
+│   ├── SKILL.md
+│   ├── story-writing.md     #   ストーリーライティング原則
+│   └── proposal-activity.md #   提案活動の原則
+└── project-management/      # プロジェクト管理
+    ├── SKILL.md
+    └── meeting-facilitation.md
+```
+
+**運用サイクル:** 作業 → 改善点を発見 → スキルに追記 → 次回から自動適用
+
+### 3. Gitリポジトリでプロジェクトを管理する
+
+案件情報をGitリポジトリに集約し、Claude Codeが文脈を保持して作業する。
+
+- `summary.md` が案件の中心（Single Source of Truth）
+- Claude Codeはセッション開始時に `CLAUDE.md` を自動読み込み
+- MCP経由でSlack・Gmail・Notionの情報を `sources/` に集約
+
+```
+openheart-test/
+├── CLAUDE.md              # AIへの指示書
+├── summary.md             # 案件の全体像
+├── meetings/              # 議事録
+├── deliverables/          # 成果物（Markdown + PPTX）
+├── research/              # 調査・分析
+├── sources/               # 外部サービスから集約した情報
+└── assets/                # 生データ（録音・文字起こし等）
+```
 
 ## クイックスタート
 
-### 1. 戦略立案
 ```bash
+# 経営戦略立案
 ./scripts/strategy.sh "AI事業の拡大戦略" "2026年度下半期"
-```
 
-### 2. 提案資料生成
-```bash
-./scripts/proposal.sh "株式会社ABC" "DX推進コンサルティング"
-```
+# 提案資料生成（Markdown）
+./scripts/proposal.sh "株式会社ABC" "基幹システム刷新"
 
-### 3. 市場調査
-```bash
+# Markdown → PPTX変換
+./scripts/slide-gen.sh proposals/2026-03-19_ABC.md
+
+# 市場調査
 ./scripts/research.sh "AI SaaS市場の動向" "IT"
-```
 
-### 4. 議事録整理
-```bash
-./scripts/minutes.sh data/minutes/meeting_notes.txt
-```
+# 議事録整理
+./scripts/minutes.sh assets/meeting_transcript.txt
 
-### 5. 登録アクションの一括実行
-```bash
-./scripts/run_actions.sh          # 全アクション実行
-./scripts/run_actions.sh daily    # 日次アクションのみ
+# 登録アクションの一括実行
+./scripts/run_actions.sh          # 全アクション
+./scripts/run_actions.sh daily    # 日次のみ
 ./scripts/run_actions.sh --list   # 一覧表示
 ```
 
-## プロジェクト構成
+## 参考
 
-```
-.
-├── CLAUDE.md              # プロジェクトルール・設定
-├── TASKS.md               # タスク管理（自動更新）
-├── ACTIONS.json            # アクション定義（承認・スケジュール管理）
-├── scripts/
-│   ├── strategy.sh        # 戦略立案スクリプト
-│   ├── proposal.sh        # 提案資料生成スクリプト
-│   ├── research.sh        # 市場調査スクリプト
-│   ├── minutes.sh         # 議事録整理スクリプト
-│   └── run_actions.sh     # アクション一括実行エンジン
-├── templates/
-│   ├── strategy.md        # 戦略書テンプレート（PEST/SWOT/5Forces）
-│   ├── proposal.md        # 提案書テンプレート
-│   └── minutes.md         # 議事録テンプレート
-├── data/
-│   ├── market/            # 市場データ・業界レポート
-│   ├── clients/           # 顧客情報
-│   ├── minutes/           # 会議の文字起こし・メモ
-│   └── reports/           # 社内レポート
-├── strategies/            # 生成された戦略文書
-├── proposals/             # 生成された提案資料
-└── actions/               # 実行ログ・プロンプト履歴
-```
-
-## ワークフロー
-
-```
-1. data/ にインプット情報を配置
-       ↓
-2. scripts/ で自動化スクリプトを実行
-       ↓
-3. templates/ をベースにClaude Codeが文書を生成
-       ↓
-4. strategies/ or proposals/ に出力を保存
-       ↓
-5. TASKS.md / ACTIONS.json が自動更新
-```
-
-## ACTIONS.json による自動化管理
-
-`ACTIONS.json` にアクションを定義し、`run_actions.sh` で一括実行できます:
-
-| アクション | スケジュール | 説明 |
-|-----------|------------|------|
-| daily-market-research | daily | 毎日の市場動向収集 |
-| strategy-generation | on-demand | 経営戦略文書の生成 |
-| proposal-generation | on-demand | 顧客提案資料の生成 |
-| minutes-processing | on-demand | 議事録の整理・要約 |
-
-## データの追加方法
-
-### 市場データ
-`data/market/` にMarkdown/テキスト/CSVファイルを配置
-
-### 顧客情報
-`data/clients/` に顧客ごとのMarkdownファイルを配置
-
-### 会議メモ
-`data/minutes/` にテキストファイルを配置（文字起こしデータ等）
-
-### 社内レポート
-`data/reports/` にMarkdownファイルを配置
+- 「Claude CodeとGitでコンサルの仕事を完結させる」（@yusaku_0426）
+- 「Claude Codeで開発プロジェクトのプロマネをぶん回す」（@gura105）
+- Anthropic: "Eight Trends Defining How Software Gets Built in 2026"

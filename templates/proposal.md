@@ -1,103 +1,88 @@
-# {{CLIENT_NAME}} 様向けご提案書
+# {{PROJECT_TITLE}} 提案資料 — 構成案
 
-**提案日**: {{DATE}}
-**提案者**: OpenHeart株式会社
-**文書番号**: {{DOC_ID}}
+## スライド1: 表紙（カバースライド）
+- **宛先:** {{CLIENT_NAME}} 御中
+- **タイトル:** {{PROJECT_TITLE}}／提案資料
+- **日付:** {{DATE}}
 
----
+## スライド2: アジェンダ
+1. 背景と目的
+2. 現状の課題
+3. ご提案内容
+4. 期待効果
+5. スケジュール
+6. 費用
+7. 次のステップ
 
-## 1. 背景・課題認識
+## スライド3: 背景と目的
+- **主張:** {{WHY_NOW}} — なぜ今、このプロジェクトが必要か
+- **背景:** {{BACKGROUND_CONTEXT}}
+- **本提案の目的:** {{PROPOSAL_PURPOSE}}
 
-### お客様の現状
-{{CLIENT_CURRENT_STATE}}
+## スライド4: 現状の課題
+- **主張:** {{CORE_ISSUE}} — 課題の構造を明らかにする
+- **課題1:** {{ISSUE_1}}
+- **課題2:** {{ISSUE_2}}
+- **課題3:** {{ISSUE_3}}
+- **根拠データ:** {{SUPPORTING_DATA}}
 
-### 認識している課題
-{{CLIENT_CHALLENGES}}
+## スライド5: ご提案内容（概要）
+- **主張:** {{SOLUTION_HEADLINE}} — Why this approach
+- **提案の全体像:** {{SOLUTION_OVERVIEW}}
+- **OpenHeartの強み:** {{WHY_US}} — なぜ我々が最適か
 
-### 本提案の目的
-{{PROPOSAL_PURPOSE}}
+## スライド6: ご提案内容（詳細）
+- **主張:** {{DETAIL_HEADLINE}}
+- **サービス構成:**
+  | No. | 項目 | 内容 | 備考 |
+  |-----|------|------|------|
+  | 1 | {{ITEM_1}} | {{DETAIL_1}} | {{NOTE_1}} |
+  | 2 | {{ITEM_2}} | {{DETAIL_2}} | {{NOTE_2}} |
+  | 3 | {{ITEM_3}} | {{DETAIL_3}} | {{NOTE_3}} |
 
-## 2. ご提案内容
+## スライド7: 期待効果
+- **主張:** {{EFFECT_HEADLINE}} — 定量的な効果を示す
+- **定量効果:**
+  | 効果項目 | 現状 | 導入後見込み | 改善率 |
+  |---------|------|------------|--------|
+  | {{EFFECT_1}} | {{BEFORE_1}} | {{AFTER_1}} | {{IMPROVEMENT_1}} |
+  | {{EFFECT_2}} | {{BEFORE_2}} | {{AFTER_2}} | {{IMPROVEMENT_2}} |
+- **定性効果:** {{QUALITATIVE_EFFECTS}}
 
-### 2.1 ソリューション概要
+## スライド8: スケジュール
+- **主張:** {{SCHEDULE_HEADLINE}}
+- **Phase 1:** {{PHASE_1_NAME}} ({{PHASE_1_PERIOD}}) — {{PHASE_1_CONTENT}}
+- **Phase 2:** {{PHASE_2_NAME}} ({{PHASE_2_PERIOD}}) — {{PHASE_2_CONTENT}}
+- **Phase 3:** {{PHASE_3_NAME}} ({{PHASE_3_PERIOD}}) — {{PHASE_3_CONTENT}}
 
-{{SOLUTION_OVERVIEW}}
+## スライド9: 費用
+- **主張:** {{COST_HEADLINE}}
+- **概算見積:**
+  | 項目 | 金額（税別） |
+  |------|------------|
+  | {{COST_ITEM_1}} | {{AMOUNT_1}} |
+  | {{COST_ITEM_2}} | {{AMOUNT_2}} |
+  | **合計** | **{{TOTAL}}** |
 
-### 2.2 提案詳細
-
-#### サービス/プロダクト構成
-
-| No. | 項目 | 内容 | 備考 |
-|-----|------|------|------|
-| 1 | {{ITEM_1}} | {{DETAIL_1}} | {{NOTE_1}} |
-| 2 | {{ITEM_2}} | {{DETAIL_2}} | {{NOTE_2}} |
-| 3 | {{ITEM_3}} | {{DETAIL_3}} | {{NOTE_3}} |
-
-### 2.3 OpenHeartの強み・差別化ポイント
-
-{{DIFFERENTIATION}}
-
-## 3. 期待効果
-
-### 定量的効果
-
-| 効果項目 | 現状 | 導入後見込み | 改善率 |
-|---------|------|------------|--------|
-| {{EFFECT_1}} | {{BEFORE_1}} | {{AFTER_1}} | {{IMPROVEMENT_1}} |
-| {{EFFECT_2}} | {{BEFORE_2}} | {{AFTER_2}} | {{IMPROVEMENT_2}} |
-| {{EFFECT_3}} | {{BEFORE_3}} | {{AFTER_3}} | {{IMPROVEMENT_3}} |
-
-### 定性的効果
-{{QUALITATIVE_EFFECTS}}
-
-## 4. 導入スケジュール
-
-| フェーズ | 期間 | 内容 | 成果物 |
-|---------|------|------|--------|
-| Phase 1 | {{SCHEDULE_1_PERIOD}} | {{SCHEDULE_1_CONTENT}} | {{SCHEDULE_1_OUTPUT}} |
-| Phase 2 | {{SCHEDULE_2_PERIOD}} | {{SCHEDULE_2_CONTENT}} | {{SCHEDULE_2_OUTPUT}} |
-| Phase 3 | {{SCHEDULE_3_PERIOD}} | {{SCHEDULE_3_CONTENT}} | {{SCHEDULE_3_OUTPUT}} |
-
-## 5. 費用
-
-### 概算見積
-
-| 項目 | 単価 | 数量 | 金額（税別） |
-|------|------|------|------------|
-| {{COST_ITEM_1}} | {{UNIT_PRICE_1}} | {{QUANTITY_1}} | {{AMOUNT_1}} |
-| {{COST_ITEM_2}} | {{UNIT_PRICE_2}} | {{QUANTITY_2}} | {{AMOUNT_2}} |
-| **合計** | | | **{{TOTAL}}** |
-
-### 費用に含まれるもの
-{{INCLUDED}}
-
-### 費用に含まれないもの
-{{EXCLUDED}}
-
-## 6. 体制
-
-### プロジェクト体制図
-{{TEAM_STRUCTURE}}
-
-### 主要メンバー
-
-| 役割 | 担当 | 責任範囲 |
-|------|------|---------|
-| PM | {{PM_NAME}} | {{PM_SCOPE}} |
-| リード | {{LEAD_NAME}} | {{LEAD_SCOPE}} |
-
-## 7. 導入実績・事例
-
-{{CASE_STUDIES}}
-
-## 8. 次のステップ
-
+## スライド10: 次のステップ
+- **主張:** 具体的なアクションで前に進める
 1. {{NEXT_STEP_1}}
 2. {{NEXT_STEP_2}}
 3. {{NEXT_STEP_3}}
 
 ---
 
-**お問い合わせ先**
-OpenHeart株式会社
-{{CONTACT_INFO}}
+## メッセージライン確認用（スライドの主張だけ並べてストーリーを検証）
+1. （表紙）
+2. （アジェンダ）
+3. {{WHY_NOW}}
+4. {{CORE_ISSUE}}
+5. {{SOLUTION_HEADLINE}}
+6. {{DETAIL_HEADLINE}}
+7. {{EFFECT_HEADLINE}}
+8. {{SCHEDULE_HEADLINE}}
+9. {{COST_HEADLINE}}
+10. 具体的なアクションで前に進める
+
+> **チェック:** メッセージラインだけ読んでストーリーが繋がるか？
+> Why now, Why you が明確か？ 冒頭の問いが最後で解決されているか？

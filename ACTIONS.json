@@ -1,20 +1,21 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "lastUpdated": "2026-03-19T00:00:00Z",
+  "description": "OpenHeartコンサルティング業務の承認済みアクション定義。run_actions.shで一括実行可能。",
   "actions": [
     {
       "id": "action-001",
       "name": "daily-market-research",
-      "description": "毎日の市場動向・競合情報の収集と要約",
+      "description": "毎日の市場動向・競合情報の収集と要約。research/に出力。",
       "script": "scripts/research.sh",
       "schedule": "daily",
       "status": "approved",
-      "output": "data/market/"
+      "output": "research/"
     },
     {
       "id": "action-002",
       "name": "strategy-generation",
-      "description": "収集データに基づく経営戦略文書の生成",
+      "description": "収集データに基づく経営戦略文書の生成。data/market, data/reports, meetings/を参照。",
       "script": "scripts/strategy.sh",
       "schedule": "on-demand",
       "status": "approved",
@@ -23,7 +24,7 @@
     {
       "id": "action-003",
       "name": "proposal-generation",
-      "description": "顧客向け提案資料の自動生成",
+      "description": "顧客向け提案資料のMarkdown生成。Step1のストーリーライン作成。",
       "script": "scripts/proposal.sh",
       "schedule": "on-demand",
       "status": "approved",
@@ -31,12 +32,21 @@
     },
     {
       "id": "action-004",
+      "name": "slide-generation",
+      "description": "Markdown構成からPPTXを生成。Step2のレイアウト選定→Step3のXML編集→ビジュアルQA。",
+      "script": "scripts/slide-gen.sh",
+      "schedule": "on-demand",
+      "status": "approved",
+      "output": "deliverables/"
+    },
+    {
+      "id": "action-005",
       "name": "minutes-processing",
-      "description": "議事録の整理・要約・アクションアイテム抽出",
+      "description": "議事録の整理・要約・アクションアイテム抽出。summary.mdも自動更新。",
       "script": "scripts/minutes.sh",
       "schedule": "on-demand",
       "status": "approved",
-      "output": "data/minutes/"
+      "output": "meetings/"
     }
   ]
 }

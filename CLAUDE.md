@@ -1,50 +1,103 @@
-# OpenHeart Business Automation Project
+# OpenHeart コンサルティング業務基盤
 
-## Overview
-OpenHeartの経営業務（戦略立案・顧客提案・情報収集）をClaude Codeベースで自動化するプロジェクト。
-プロジェクトフォルダ起点で全情報をMarkdownに集約し、再利用可能な形で管理する。
+## プロジェクト概要
+本リポジトリは、OpenHeartのコンサルティング業務をClaude CodeとGit上に集約するための基盤です。
+提案資料の作成、暗黙知のスキル化、案件情報の管理を一続きに扱います。
 
-## Project Structure
+## リポジトリ構成
 ```
 openheart-test/
-├── CLAUDE.md              # このファイル（プロジェクトルール）
-├── TASKS.md               # タスク管理（自動更新）
-├── ACTIONS.json            # 承認済みアクション定義
-├── scripts/               # 自動化スクリプト群
-│   ├── strategy.sh        # 戦略立案の実行
-│   ├── proposal.sh        # 提案資料の生成
-│   ├── research.sh        # 市場調査・情報収集
-│   └── minutes.sh         # 議事録整理
-├── templates/             # テンプレート群
-│   ├── strategy.md        # 戦略立案テンプレート
-│   ├── proposal.md        # 提案資料テンプレート
-│   └── minutes.md         # 議事録テンプレート
-├── data/                  # 入力データ格納
-│   ├── market/            # 市場データ・業界レポート
-│   ├── clients/           # 顧客情報
-│   ├── minutes/           # 会議の文字起こし・メモ
-│   └── reports/           # 社内レポート・検証メモ
-├── strategies/            # 生成された戦略文書
-├── proposals/             # 生成された提案資料
-└── actions/               # 実行ログ・履歴
+├── CLAUDE.md                          # AIへの指示書（本ファイル）
+├── summary.md                         # 案件の全体像（ステータス・経緯・ToDo）
+├── .claude/skills/                    # スキルファイル（暗黙知の言語化）
+│   ├── pptx/                          # スライド生成スキル
+│   │   ├── SKILL.md                   #   スキル定義（いつ・どう使うか）
+│   │   └── editing.md                 #   テンプレートからの編集手順
+│   ├── consulting/                    # コンサルティング暗黙知スキル
+│   │   ├── SKILL.md                   #   スキル定義
+│   │   ├── story-writing.md           #   ストーリーライティング
+│   │   └── proposal-activity.md       #   提案活動の原則
+│   └── project-management/            # プロジェクト管理スキル
+│       ├── SKILL.md                   #   スキル定義
+│       └── meeting-facilitation.md    #   会議運営・議事録
+├── meetings/                          # 定例・報告会の議事録
+├── deliverables/                      # 成果物（提案書・報告書・スライド）
+├── research/                          # 調査・分析（業界動向・競合・技術検証）
+├── sources/                           # MCP経由で外部サービスから集約した情報
+├── assets/                            # 生データ（録音・PDF・文字起こし等）
+├── templates/                         # スライド・文書テンプレート
+│   ├── strategy.md                    #   戦略文書テンプレート
+│   ├── proposal.md                    #   提案資料テンプレート（Markdown構成）
+│   └── minutes.md                     #   議事録テンプレート
+├── scripts/                           # 自動化スクリプト群
+│   ├── strategy.sh                    #   戦略立案
+│   ├── proposal.sh                    #   提案資料生成
+│   ├── research.sh                    #   市場調査・情報収集
+│   ├── minutes.sh                     #   議事録整理
+│   ├── slide-gen.sh                   #   Markdown→PPTX変換
+│   └── run_actions.sh                 #   アクション一括実行
+├── strategies/                        # 生成された戦略文書
+├── proposals/                         # 生成された提案資料（Markdown）
+├── data/                              # インプットデータ
+│   ├── market/                        #   市場データ
+│   ├── clients/                       #   顧客情報
+│   ├── minutes/                       #   会議メモ・文字起こし
+│   └── reports/                       #   社内レポート
+├── TASKS.md                           # タスク管理（自動更新）
+├── ACTIONS.json                       # 承認済みアクション定義
+└── actions/                           # 実行ログ・プロンプト履歴
 ```
 
-## Rules
-- 全ての出力はMarkdown形式で `strategies/` または `proposals/` に保存する
-- データソースは必ず `data/` 配下に格納してから処理する
-- 生成物には必ず日付プレフィックス（YYYY-MM-DD）を付与する
+## ワークフロー
+
+### 1. 提案スライド作成フロー
+Claude Codeで提案スライドを作る場合、以下の3ステップで進めること:
+
+**Step 1: Markdownでストーリーとメッセージラインを書く**
+- 資料全体のストーリーライン、各スライドの主張、根拠となる情報を整理する
+- PowerPointの見た目はまだ触らない。先に内容を言語化する
+- 背景と目的、現状の課題、提案方針、技術選定、スケジュールなどを構成
+- 生成された構成案は叩き台。「ストーリーは繋がるか」「データは足りているか」を吟味する
+
+**Step 2: Plan Modeでスライド構成を設計する**
+- `.claude/skills/pptx/` のスキルファイルを参照し、レイアウトパターンを選定する
+- 「伝えたい内容の型」からレイアウトを逆引きする
+- Markdownの各セクションがどのレイアウトに対応するかを確認・調整する
+
+**Step 3: テンプレートのXMLを編集してPPTXを生成する**
+- PPTXのXMLを編集してスライドを生成する
+- 生成後はPDF/画像に変換して確認する
+- サブエージェントで1枚ずつ画像チェック（テキスト切れ・レイアウト崩れ・消し残し検出）
+- 生成→QA→修正のサイクルをGitで記録しながら回す
+
+### 2. 暗黙知のスキル化フロー
+- `.claude/skills/` 配下にスキルファイルを配置
+- AIが関連タスクを検出したときに自動で参照・適用
+- 作業→改善点発見→スキル追記→次回自動適用のループを回す
+
+### 3. 案件情報管理フロー
+- `summary.md` が案件の中心。ステータス・経緯・合意事項・ToDoを集約
+- 何か聞かれたら、まず `summary.md` を読んで案件全体を把握する
+- 必要に応じて `meetings/` や `research/` の詳細を参照する
+- 提案スライドは `deliverables/` にMarkdownとPPTXのペアで管理
+
+## ルール
+
+### 命名規則
+- ファイルには必ず日付プレフィックス（YYYY-MM-DD）を付与する
+- 例: `2026-03-19_基幹システム刷新_提案資料.md`
+
+### 成果物ルール
 - 戦略文書には必ず「現状分析」「課題」「施策」「KPI」を含める
 - 提案資料には必ず「背景」「提案内容」「期待効果」「スケジュール」「費用」を含める
+- 議事録には必ず「議題」「議論内容」「決定事項」「アクションアイテム」を含める
 
-## Skills Usage
-- `strategy` : 戦略立案を実行（市場データ＋社内データ → 戦略文書）
-- `proposal` : 提案資料を生成（顧客情報＋戦略 → 提案資料）
-- `research` : 市場調査・競合分析を実行
-- `minutes`  : 議事録の整理・要約・アクションアイテム抽出
+### 更新ルール
+- 成果物を生成・更新したら `summary.md` を合わせて更新する
+- 会議の議事録を作成したら `summary.md` のToDoも更新する
+- 全ての変更はGitにコミットし、変更履歴として記録する
 
-## Automation Flow
-1. `data/` にインプット情報を配置
-2. `scripts/` のスクリプトでClaude Codeを呼び出し
-3. `templates/` をベースに文書を自動生成
-4. `strategies/` or `proposals/` に出力を保存
-5. `TASKS.md` と `ACTIONS.json` を自動更新
+### スキルファイルの運用
+- コンサルワークで気づいた改善点はその場でスキルファイルに反映する
+- スキルは最初から完璧にせず、使いながら育てる
+- `.claude/skills/` 配下のファイルはGitで管理し、改善の履歴を残す

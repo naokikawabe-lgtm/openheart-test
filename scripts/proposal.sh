@@ -130,7 +130,33 @@ main() {
     fi
 
     log "提案資料を生成完了: $output_file"
+
+    # summary.md更新
+    update_summary "提案資料" "$output_file"
+
+    log ""
+    log "次のステップ:"
+    log "  1. Markdownの内容を確認・修正"
+    log "  2. ./scripts/slide-gen.sh $output_file でPPTX生成"
+    log "  3. deliverables/ にMarkdownとPPTXのペアで管理"
     log "=== 提案資料生成 完了 ==="
+}
+
+update_summary() {
+    local doc_type="$1"
+    local output="$2"
+    local summary_file="$PROJECT_ROOT/summary.md"
+
+    if [ -f "$summary_file" ]; then
+        local filename
+        filename=$(basename "$output")
+        local new_row="| $DATE | $filename | $doc_type | $output |"
+        if grep -q "^| 日付 | 成果物" "$summary_file"; then
+            sed -i "/^| [0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\} .* | .*$/a $new_row" "$summary_file" 2>/dev/null || true
+        fi
+        sed -i "s/^\*\*最終更新\*\*:.*/\*\*最終更新\*\*: $DATE/" "$summary_file" 2>/dev/null || true
+        log "summary.md を更新しました"
+    fi
 }
 
 main "$@"
