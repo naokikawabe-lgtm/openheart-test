@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenHeart - 財務ダッシュボード</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>OpenHeart 財務ダッシュボード</h1>
+            <div class="header-meta">
+                <span id="current-date"></span>
+                <span class="separator">|</span>
+                <span id="fiscal-period"></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- KPI カード -->
+        <section class="kpi-section">
+            <div class="kpi-card">
+                <div class="kpi-label">現預金残高</div>
+                <div class="kpi-value" id="cash-balance"></div>
+                <div class="kpi-change" id="cash-balance-change"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">月次バーンレート</div>
+                <div class="kpi-value" id="burn-rate"></div>
+                <div class="kpi-sub">過去3ヶ月平均</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">ランウェイ</div>
+                <div class="kpi-value" id="runway"></div>
+                <div class="kpi-sub" id="runway-date"></div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">週次キャッシュフロー</div>
+                <div class="kpi-value" id="weekly-cf"></div>
+                <div class="kpi-change" id="weekly-cf-change"></div>
+            </div>
+        </section>
+
+        <!-- 週次ナビゲーション -->
+        <section class="week-nav">
+            <button id="prev-week" class="nav-btn">&larr; 前週</button>
+            <h2 id="selected-week"></h2>
+            <button id="next-week" class="nav-btn">翌週 &rarr;</button>
+        </section>
+
+        <!-- チャートセクション -->
+        <section class="chart-section">
+            <div class="chart-container">
+                <h3>週次キャッシュフロー推移</h3>
+                <canvas id="weekly-cashflow-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>現預金残高推移と予測</h3>
+                <canvas id="cash-balance-chart"></canvas>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <div class="chart-container">
+                <h3>収入・支出内訳（週次）</h3>
+                <canvas id="income-expense-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>支出カテゴリ別構成</h3>
+                <canvas id="expense-breakdown-chart"></canvas>
+            </div>
+        </section>
+
+        <!-- 週次資金繰り明細 -->
+        <section class="detail-section">
+            <h3>週次資金繰り明細</h3>
+            <div class="table-wrapper">
+                <table id="weekly-detail-table">
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>カテゴリ</th>
+                            <th>金額</th>
+                            <th>備考</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weekly-detail-body">
+                    </tbody>
+                    <tfoot id="weekly-detail-foot">
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- 月次サマリー -->
+        <section class="detail-section">
+            <h3>月次サマリー</h3>
+            <div class="table-wrapper">
+                <table id="monthly-summary-table">
+                    <thead>
+                        <tr>
+                            <th>月</th>
+                            <th>収入合計</th>
+                            <th>支出合計</th>
+                            <th>収支</th>
+                            <th>月末残高</th>
+                            <th>バーンレート</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthly-summary-body">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- アラートセクション -->
+        <section class="alert-section" id="alert-section">
+            <h3>アラート・注意事項</h3>
+            <div id="alerts"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>OpenHeart Financial Dashboard v1.0 | データ更新: <span id="last-updated"></span></p>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
