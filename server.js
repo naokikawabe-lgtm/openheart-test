@@ -29,6 +29,7 @@ const PORT = process.env.PORT || 3000;
 const FREEE_CLIENT_ID = process.env.FREEE_CLIENT_ID || '';
 const FREEE_CLIENT_SECRET = process.env.FREEE_CLIENT_SECRET || '';
 const FREEE_REDIRECT_URI = process.env.FREEE_REDIRECT_URI || `http://localhost:${PORT}/callback`;
+const DEMO_MODE = process.env.FREEE_DEMO === '1' || (!FREEE_CLIENT_ID && process.argv.includes('--demo'));
 const FREEE_AUTH_URL = 'https://accounts.secure.freee.co.jp/public_api/authorize';
 const FREEE_TOKEN_URL = 'https://accounts.secure.freee.co.jp/public_api/token';
 const FREEE_API_BASE = 'https://api.freee.co.jp';
@@ -242,6 +243,136 @@ function getOneYearAgo() {
 }
 
 // ========================================
+// デモモード: OpenHeart社のリアルなモックデータ
+// ========================================
+function generateDemoData() {
+    const months = ['2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03'];
+    const partners = [
+        { id: 1, name: '株式会社テックスター', code: 'TS001', short_name: 'テックスター' },
+        { id: 2, name: 'グローバルソフト株式会社', code: 'GS002', short_name: 'グローバルソフト' },
+        { id: 3, name: '株式会社デジタルクリエイト', code: 'DC003', short_name: 'デジタルクリエイト' },
+        { id: 4, name: 'サイバーネクスト合同会社', code: 'CN004', short_name: 'サイバーネクスト' },
+        { id: 5, name: '株式会社イノベーションラボ', code: 'IL005', short_name: 'イノベーションラボ' },
+    ];
+
+    // 取引データ（deals）: 月別の売上と経費
+    const deals = [];
+    const incomeBase = [1800000, 2100000, 1950000, 2300000, 2000000, 2400000, 2200000, 2500000, 2600000, 2800000, 2700000, 3000000];
+    const expenseBase = [1200000, 1100000, 1350000, 1250000, 1400000, 1300000, 1500000, 1450000, 1600000, 1550000, 1700000, 1650000];
+
+    months.forEach((m, i) => {
+        // 売上取引
+        deals.push({
+            id: i * 10 + 1,
+            type: 'income',
+            issue_date: `${m}-25`,
+            ref_number: `INV-${m.replace('-', '')}`,
+            partner_name: partners[i % partners.length].name,
+            details: [
+                { amount: incomeBase[i], account_item_name: '売上高', tax_code: 101, description: 'システム開発費' },
+                { amount: Math.round(incomeBase[i] * 0.15), account_item_name: '売上高', tax_code: 101, description: '保守運用費' },
+            ],
+        });
+        // 経費取引（外注・経費等）
+        deals.push({
+            id: i * 10 + 2,
+            type: 'expense',
+            issue_date: `${m}-28`,
+            ref_number: `EXP-${m.replace('-', '')}`,
+            partner_name: partners[(i + 2) % partners.length].name,
+            details: [
+                { amount: Math.round(expenseBase[i] * 0.6), account_item_name: '外注費', tax_code: 101, description: '外注開発費' },
+                { amount: Math.round(expenseBase[i] * 0.25), account_item_name: '給料手当', tax_code: 0, description: '給与' },
+                { amount: Math.round(expenseBase[i] * 0.15), account_item_name: '地代家賃', tax_code: 101, description: 'オフィス賃料' },
+            ],
+        });
+    });
+
+    // 口座データ（walletables）
+    const walletables = {
+        walletables: [
+            { id: 1, name: '三菱UFJ銀行 普通預金', type: 'bank_account', last_balance: 8520000 },
+            { id: 2, name: '住信SBIネット銀行', type: 'bank_account', last_balance: 4350000 },
+            { id: 3, name: 'GMOあおぞらネット銀行', type: 'bank_account', last_balance: 2180000 },
+            { id: 4, name: '経費精算口座', type: 'wallet', last_balance: 150000 },
+        ],
+    };
+
+    // 損益計算書（trial_pl）
+    const totalRevenue = incomeBase.reduce((s, v) => s + v + Math.round(v * 0.15), 0);
+    const totalCost = expenseBase.reduce((s, v) => s + Math.round(v * 0.6), 0);
+    const grossProfit = totalRevenue - totalCost;
+    const sga = expenseBase.reduce((s, v) => s + Math.round(v * 0.25) + Math.round(v * 0.15), 0);
+
+    const trialPl = {
+        trial_pl: {
+            balances: [
+                { account_item_name: '売上高', closing_balance: totalRevenue, debit_amount: 0, credit_amount: totalRevenue },
+                { account_item_name: '売上原価', closing_balance: totalCost, debit_amount: totalCost, credit_amount: 0 },
+                { account_item_name: '売上総利益', closing_balance: grossProfit },
+                { account_item_name: '販売費及び一般管理費', closing_balance: sga },
+                { account_item_name: '営業利益', closing_balance: grossProfit - sga },
+                { account_item_name: '経常利益', closing_balance: grossProfit - sga + 35000 },
+                { account_item_name: '当期純利益', closing_balance: Math.round((grossProfit - sga + 35000) * 0.7) },
+            ],
+        },
+    };
+
+    // 貸借対照表（trial_bs）
+    const cashTotal = walletables.walletables.reduce((s, w) => s + w.last_balance, 0);
+    const trialBs = {
+        trial_bs: {
+            balances: [
+                { account_item_name: '現金', closing_balance: 150000 },
+                { account_item_name: '普通預金', closing_balance: cashTotal - 150000 },
+                { account_item_name: '当座預金', closing_balance: 0 },
+                { account_item_name: '流動資産', closing_balance: cashTotal + 3200000 },
+                { account_item_name: '固定資産', closing_balance: 1800000 },
+                { account_item_name: '資産の部', closing_balance: cashTotal + 5000000 },
+                { account_item_name: '流動負債', closing_balance: 2100000 },
+                { account_item_name: '固定負債', closing_balance: 500000 },
+                { account_item_name: '負債の部', closing_balance: 2600000 },
+                { account_item_name: '純資産の部', closing_balance: cashTotal + 5000000 - 2600000 },
+            ],
+        },
+    };
+
+    // 請求書（invoices）
+    const invoiceStatuses = ['issued', 'issued', 'issued', 'approved', 'draft'];
+    const paymentStatuses = ['settled', 'settled', 'unsettled', 'unsettled', 'empty'];
+    const invoices = {
+        invoices: months.slice(-5).map((m, i) => ({
+            id: 100 + i,
+            invoice_number: `OH-${m.replace('-', '')}-001`,
+            partner_name: partners[i % partners.length].name,
+            issue_date: `${m}-01`,
+            due_date: `${m}-末`.replace('-末', i < 3 ? '-28' : '-30'),
+            total_amount: incomeBase[months.indexOf(m)] + Math.round(incomeBase[months.indexOf(m)] * 0.15),
+            invoice_status: invoiceStatuses[i],
+            payment_status: paymentStatuses[i],
+        })),
+    };
+
+    const accountItems = {
+        account_items: [
+            { id: 1, name: '売上高' }, { id: 2, name: '外注費' },
+            { id: 3, name: '給料手当' }, { id: 4, name: '地代家賃' },
+            { id: 5, name: '通信費' }, { id: 6, name: '旅費交通費' },
+        ],
+    };
+
+    return {
+        deals: { deals },
+        walletables,
+        trialPl,
+        trialBs,
+        invoices,
+        partners: { partners },
+        accountItems,
+    };
+}
+
+// ========================================
 // HTTP サーバー
 // ========================================
 const MIME_TYPES = {
@@ -296,6 +427,14 @@ const server = http.createServer(async (req, res) => {
 
         // freee接続状態の確認
         if (pathname === '/api/freee/status') {
+            if (DEMO_MODE) {
+                sendJson(res, 200, {
+                    configured: true, connected: true, demo: true,
+                    company_id: 'demo-12345', expires_at: Date.now() + 86400000,
+                    client_id_set: true,
+                });
+                return;
+            }
             const configured = !!(FREEE_CLIENT_ID && FREEE_CLIENT_SECRET);
             const connected = !!tokens.access_token;
             sendJson(res, 200, {
@@ -351,6 +490,11 @@ const server = http.createServer(async (req, res) => {
 
         // freee全データ取得（同期）
         if (pathname === '/api/freee/sync') {
+            if (DEMO_MODE) {
+                const data = generateDemoData();
+                sendJson(res, 200, { success: true, data, synced_at: new Date().toISOString(), demo: true });
+                return;
+            }
             const data = await fetchAllFreeeData();
             sendJson(res, 200, { success: true, data, synced_at: new Date().toISOString() });
             return;
@@ -453,8 +597,9 @@ server.listen(PORT, () => {
 ║  http://localhost:${PORT}                               ║
 ╠════════════════════════════════════════════════════════╣
 ║  freee連携ステータス:                                  ║
+║    モード:     ${DEMO_MODE ? 'デモモード (モックデータ)' : '本番モード'}                ║
 ║    Client ID:  ${FREEE_CLIENT_ID ? '設定済み' : '未設定 (FREEE_CLIENT_ID)'}               ║
-║    認証状態:   ${tokens.access_token ? '接続済み' : '未接続'}                          ║
+║    認証状態:   ${DEMO_MODE ? 'デモ接続' : tokens.access_token ? '接続済み' : '未接続'}                          ║
 ╠════════════════════════════════════════════════════════╣
 ║  freee連携の設定方法:                                  ║
 ║  1. https://app.secure.freee.co.jp/developers で      ║
