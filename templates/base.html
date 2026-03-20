@@ -13,7 +13,12 @@
   <style>
     /* ============================================================
        OpenHeart Theme CSS（インライン）
-       実際の生成時は templates/openheart-theme.css の内容をここに埋め込む
+
+       構造: この資料は1枚の非常に長いWebページ。
+       各 <section class="slide"> が16:9の画面1枚分に相当し、
+       JavaScriptでセクション間を移動する。
+
+       実際の生成時は templates/openheart-theme.css の内容をここに埋め込む。
        ============================================================ */
 
     /* --- ここに openheart-theme.css の全内容を貼り付け --- */
@@ -21,34 +26,47 @@
   </style>
 </head>
 <body>
+  <!--
+    ============================================================
+    OpenHeart Format プレゼンテーション
 
-  <!-- プログレスバー -->
+    この資料は1枚の長いWebページです。
+    各 <section class="slide"> が画面1枚分（100vh × 100vw）のスライドです。
+    矢印キー / スワイプ / マウスホイールでセクション間を移動します。
+    ============================================================
+  -->
+
+  <!-- UI: プログレスバー -->
   <div class="progress-bar" id="progressBar"></div>
 
-  <!-- ナビゲーションドット -->
+  <!-- UI: ナビゲーションドット -->
   <div class="nav-dots" id="navDots"></div>
 
-  <!-- スライドカウンター -->
+  <!-- UI: スライドカウンター -->
   <div class="slide-counter" id="slideCounter"></div>
 
   <!-- ============================================================
-       スライド定義
-       各スライドは .slide クラスを持つ <section> 要素
+       セクション（スライド）定義
+       各セクションは .slide クラスを持つ <section> 要素
+       タイプ別に以下のクラスを追加:
+         title-slide     ... タイトル・エンディング
+         section-slide   ... セクション区切り
+         content-slide   ... ライト背景コンテンツ
+         content-slide-dark ... ダーク背景コンテンツ
        ============================================================ -->
 
-  <!-- スライド1: タイトル -->
+  <!-- セクション1: タイトル -->
   <section class="slide title-slide">
     <div class="slide-content">
       <div class="reveal main-title">{{MAIN_TITLE}}</div>
       <div class="reveal subtitle">{{SUBTITLE}}</div>
       <div class="reveal author">{{AUTHOR}} — {{DATE}}</div>
     </div>
-    <!-- 装飾（オプション） -->
     <div class="circle-decoration" style="width: 400px; height: 400px; background: var(--oh-primary); top: -100px; right: -100px;"></div>
     <div class="circle-decoration" style="width: 300px; height: 300px; background: var(--oh-accent); bottom: -80px; left: -80px;"></div>
   </section>
 
-  <!-- スライド2: セクション -->
+  <!-- セクション2: セクション区切り -->
   <section class="slide section-slide">
     <div class="slide-content">
       <div class="reveal section-number">01</div>
@@ -57,7 +75,7 @@
     </div>
   </section>
 
-  <!-- スライド3: コンテンツ（箇条書き） -->
+  <!-- セクション3: コンテンツ（箇条書き） -->
   <section class="slide content-slide">
     <div class="slide-content left-align">
       <h2 class="reveal slide-heading">{{HEADING}}</h2>
@@ -70,23 +88,23 @@
     </div>
   </section>
 
-  <!-- スライド4: カードグリッド -->
+  <!-- セクション4: カードグリッド（図解としても機能） -->
   <section class="slide content-slide-dark">
     <div class="slide-content">
       <h2 class="reveal slide-heading">{{HEADING}}</h2>
       <div class="reveal card-grid">
         <div class="card card-dark">
-          <div class="card-icon">🎯</div>
+          <div class="card-icon">&#x1f3af;</div>
           <div class="card-title">カードタイトル1</div>
           <div class="card-description">説明テキスト</div>
         </div>
         <div class="card card-dark">
-          <div class="card-icon">🚀</div>
+          <div class="card-icon">&#x1f680;</div>
           <div class="card-title">カードタイトル2</div>
           <div class="card-description">説明テキスト</div>
         </div>
         <div class="card card-dark">
-          <div class="card-icon">💡</div>
+          <div class="card-icon">&#x1f4a1;</div>
           <div class="card-title">カードタイトル3</div>
           <div class="card-description">説明テキスト</div>
         </div>
@@ -94,7 +112,7 @@
     </div>
   </section>
 
-  <!-- スライド5: 統計・数値 -->
+  <!-- セクション5: 統計・数値（インパクト表示） -->
   <section class="slide content-slide">
     <div class="slide-content">
       <h2 class="reveal slide-heading">{{HEADING}}</h2>
@@ -115,7 +133,32 @@
     </div>
   </section>
 
-  <!-- スライド6: 引用 -->
+  <!-- セクション6: 図解（HTML/CSSフローチャート） -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">{{HEADING}}</h2>
+      <div class="reveal diagram-flow">
+        <!--
+          図解はHTML/CSSで構成する（SVGではなく）。
+          Flexbox/Gridで配置し、border/backgroundで図形を描画。
+          矢印は ::after 擬似要素やCSS三角形で表現。
+        -->
+        <div class="diagram-node">
+          <div class="diagram-node-label">入力</div>
+        </div>
+        <div class="diagram-arrow"></div>
+        <div class="diagram-node diagram-node-primary">
+          <div class="diagram-node-label">処理</div>
+        </div>
+        <div class="diagram-arrow"></div>
+        <div class="diagram-node diagram-node-accent">
+          <div class="diagram-node-label">出力</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- セクション7: 引用 -->
   <section class="slide content-slide-dark">
     <div class="slide-content">
       <div class="reveal quote-block">
@@ -125,7 +168,7 @@
     </div>
   </section>
 
-  <!-- スライド7: ステップ表示 -->
+  <!-- セクション8: ステップ表示 -->
   <section class="slide content-slide">
     <div class="slide-content">
       <h2 class="reveal slide-heading">{{HEADING}}</h2>
@@ -149,7 +192,30 @@
     </div>
   </section>
 
-  <!-- スライド8: CTA（最終スライド） -->
+  <!-- セクション9: 比較テーブル -->
+  <section class="slide content-slide">
+    <div class="slide-content">
+      <h2 class="reveal slide-heading">{{HEADING}}</h2>
+      <table class="reveal comparison-table">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>Before</th>
+            <th>After</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>項目1</td>
+            <td>値1</td>
+            <td>値2</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- セクション10: CTA（最終） -->
   <section class="slide title-slide">
     <div class="slide-content">
       <div class="reveal main-title">Thank You</div>
@@ -162,6 +228,9 @@
 
   <!-- ============================================================
        JavaScript: ナビゲーション＆アニメーション
+
+       1枚の長いWebページの各セクション間をスムーズに移動する。
+       キーボード、マウスホイール、タッチ/スワイプに対応。
        ============================================================ -->
   <script>
     class SlidePresentation {
@@ -193,7 +262,7 @@
       }
 
       bindEvents() {
-        // キーボード
+        // キーボードナビゲーション
         document.addEventListener('keydown', (e) => {
           switch (e.key) {
             case 'ArrowDown':
@@ -227,7 +296,7 @@
           else if (e.deltaY < -30) this.prevSlide();
         }, { passive: true });
 
-        // タッチ
+        // タッチ操作
         document.addEventListener('touchstart', (e) => {
           this.touchStartY = e.touches[0].clientY;
           this.touchStartX = e.touches[0].clientX;
@@ -277,10 +346,10 @@
       }
 
       updateSlide(index) {
-        // スクロール
+        // セクションへスクロール
         this.slides[index].scrollIntoView({ behavior: 'smooth' });
 
-        // visible クラス管理
+        // visible クラス管理（アニメーショントリガー）
         this.slides.forEach((slide, i) => {
           slide.classList.toggle('visible', i === index);
         });
