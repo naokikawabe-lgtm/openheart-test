@@ -3,6 +3,10 @@
 *.env
 .env.*
 
+# Runtime files (auto-generated)
+.daily-report-trigger
+.last-report-date
+
 # Logs
 *.log
 logs/
